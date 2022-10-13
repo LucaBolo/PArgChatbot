@@ -85,6 +85,51 @@ class ArgGraphDb:
         return len(records)
 
     @staticmethod
+    def create_edges(tx):
+        
+        result = tx.run('''CREATE   (N1:arg)-[n1n2:attack]->(N2:arg),
+                                    (N2:arg)-[n2n1:attack]->(N1:arg), 
+                                    (N1:arg)-[n1r1:endorse]->(R1:reply),
+                                    (N2:arg)-[n2r1:endorse]->(R1:reply),
+                                    (N9:arg)-[n9n10:attack]->(N10:arg),
+                                    (N10:arg)-[n10n9:attack]->(N9:arg),
+                                    (N9:arg)-[n9r1:endorse]->(R1:reply),
+                                    (N10:arg)-[n10r1:endorse]->(R1:reply),
+                                    (N3:arg)-[n3n4:attack]->(N4:arg),
+                                    (N4:arg)-[n4n3:attack]->(N3:arg),
+                                    (N3:arg)-[n3r1:endorse]->(R1:reply),
+                                    (N4:arg)-[n4r1:endorse]->(R1:reply),
+                                    (N7:arg)-[n7n8:attack]->(N8:arg),
+                                    (N8:arg)-[n8n7:attack]->(N7:arg),
+                                    (N7:arg)-[n7r1:endorse]->(R1:reply),
+                                    (N8:arg)-[n8r1:attack]->(R1:reply),
+                                    (N8:arg)-[n8r3:endorse]->(R3:reply),
+                                    (N8:arg)-[n8r2:attack]->(R2:reply),
+                                    (N15:arg)-[n15n16:attack]->(N16:arg),
+                                    (N16:arg)-[n16n15:attack]->(N15:arg),
+                                    (N16:arg)-[n16r1:endorse]->(R1:reply),
+                                    (N15:arg)-[n15r3:endorse]->(R3:reply),
+                                    (N15:arg)-[n15r1:attack]->(R1:reply),
+                                    (N15:arg)-[n15r2:attack]->(R2:reply),
+                                    (N13:arg)-[n13n14:attack]->(N14:arg),
+                                    (N14:arg)-[n14n13:attack]->(N13:arg),
+                                    (N14:arg)-[n14r2:endorse]->(R2:reply),
+                                    (N14:arg)-[n14r1:attack]->(R1:reply),
+                                    (N13:arg)-[n13r1:endorse]->(R1:reply),
+                                    (N5:arg)-[n5n6:attack]->(N6:arg),
+                                    (N6:arg)-[n6n5:attack]->(N5:arg),
+                                    (N6:arg)-[n6r1:attack]->(R1:reply),
+                                    (N6:arg)-[n6r2:endorse]->(R2:reply),
+                                    (N5:arg)-[n5r1:endorse]->(R1:reply),
+                                    (N11:arg)-[n11n12:attack]->(N12:arg),
+                                    (N12:arg)-[n12n11:attack]->(N11:arg),
+                                    (N12:arg)-[n12r1:endorse]->(R1:reply),
+                                    (N11:arg)-[n11r1:attack]->(R1:reply),
+                                    (N11:arg)-[n12r2:endorse]->(R2:reply),''')
+        records = result.value()
+        return len(records)
+
+    @staticmethod
     def delete_nodes(tx):
         result = tx.run("MATCH (nodes) DELETE nodes")
         records = result.value()
@@ -94,16 +139,23 @@ class ArgGraphDb:
     @staticmethod
     def read_nodes(tx):
 
+        nodes = tx.run("MATCH (nodes:arg) return nodes.sentences")
+        return nodes.value()
+
+    @staticmethod
+    def read_edges(tx):
+
         nodes = tx.run("MATCH (nodes) return nodes")
         return nodes.value()
 
     def populate_db(self):
         with self.driver.session() as session:
             #session.execute_read()
-            # = session.write_transaction(self.create_nodes)
-            #print(n)
-            nodes = session.execute_read(self.read_nodes)
-            print(len(nodes))
+            n = session.write_transaction(self.create_nodes)
+            print(n)
+            e = session.write_transaction(self.create_edges)
+            #nodes = session.execute_read(self.read_nodes)
+            print(e)
     
     
     def reset_db(self):
@@ -111,10 +163,15 @@ class ArgGraphDb:
             n = session.write_transaction(self.delete_nodes)
             print(n)
 
+    def read_db(self):
+        with self.driver.session() as session:
+            nodes = session.execute_read(self.read_nodes)
+            print(len(nodes))
+
     def close(self):
         self.driver.close()
 
 if __name__ == '__main__':
     g = ArgGraphDb("neo4j://localhost:7687", "neo4j", "password")
-    g.populate_db()
+    g.read_db()
     g.close()
