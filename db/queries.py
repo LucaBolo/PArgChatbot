@@ -11,7 +11,7 @@ def get_sentences_attacking_response(driver: Neo4jDriver, response: str):
         # WHERE $response IN a.sentences 
         # WITH COLLECT(DISTINCT a.sentences) as kb
         # [s in kb WHERE s IN  $status] as attacking_args
-        return attacking_args.value()
+        return [arg_sentence for node in attacking_args.value() for arg_sentence in node]
 
 
 def get_sentences_attacking_argument(driver: Neo4jDriver, argument: str):
@@ -23,17 +23,17 @@ def get_sentences_attacking_argument(driver: Neo4jDriver, argument: str):
                                         WHERE $argument IN a2.sentences
                                         RETURN a1.sentences""", argument=argument)
         
-        return attacking_args.value()
+        return [arg_sentence for node in attacking_args.value() for arg_sentence in node]
 
 
 def get_sentences_endorsing_response(driver: Neo4jDriver, response: str):
     with driver.session() as session:
 
-        attacking_args = session.run("""MATCH (a:arg)-[:endorse]->(re:reply) 
+        endorsing_args = session.run("""MATCH (a:arg)-[:endorse]->(re:reply) 
                                         WHERE $response IN re.sentence
                                         RETURN a.sentences""", response=response)
         
-        return attacking_args.value()
+        return [arg_sentence for node in endorsing_args.value() for arg_sentence in node]
 
 def get_sentences_attacked_by_argument(driver: Neo4jDriver, argument: str):
     with driver.session() as session:
@@ -46,7 +46,7 @@ def get_sentences_attacked_by_argument(driver: Neo4jDriver, argument: str):
                                         WHERE $argument IN a1.sentences
                                         RETURN re.sentence as att""", argument=argument)
         
-        return attacked.value()
+        return [arg_sentence for node in attacked.value() for arg_sentence in node]
 
 
 def get_sentences_endorsed_by_argument(driver: Neo4jDriver, argument: str):
@@ -60,4 +60,4 @@ def get_sentences_endorsed_by_argument(driver: Neo4jDriver, argument: str):
                                         WHERE $argument IN a1.sentences
                                         RETURN re.sentence as att""", argument=argument)
         
-        return endorsed.value()
+        return [arg_sentence for node in endorsed.value() for arg_sentence in node]
