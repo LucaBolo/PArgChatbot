@@ -1,6 +1,6 @@
 from neo4j import GraphDatabase
 
-from queries import isAttackedBy
+from queries import *
 
 class CovidVaccineGraph:
 
@@ -79,9 +79,9 @@ class CovidVaccineGraph:
                                     (N16:arg {id:"n16", sentences: ["I've never experienced a serious anaphylaxis",
                                                         "I've never had a serious anaphylactic reaction",
                                                         "I've never gone into anaphylactic shock before"]}),
-                                    (R1:reply {id:"r1", sentence: "Get vaccinated at any vaccine site. No special monitoring"}),
-                                    (R2:reply {id:"r2", sentence: "Get vaccinated at any vaccine site. Monitoring for 60 minutes"}),
-                                    (R3:reply {id:"r3", sentence: "Get vaccinated at the hospital"})''')
+                                    (R1:reply {id:"r1", sentence: ["Get vaccinated at any vaccine site. No special monitoring"]}),
+                                    (R2:reply {id:"r2", sentence: ["Get vaccinated at any vaccine site. Monitoring for 60 minutes"]}),
+                                    (R3:reply {id:"r3", sentence: ["Get vaccinated at the hospital"]})''')
         records = result.value()
         return len(records)
 
@@ -173,13 +173,7 @@ class CovidVaccineGraph:
 
 if __name__ == '__main__':
     g = CovidVaccineGraph("neo4j://localhost:7687", "neo4j", "password")
-    isAttackedBy(g.driver, ["I suffer from the celiac disease",
-                                "I am afflicted with the celiac disease",
-                                "I do have a drug allergy",
-                                "I'm allergic to latex",
-                                "I have a latex allergy",
-                                "I have already had an anaphylactic reaction before"
-                                ], "Get vaccinated at any vaccine site. No special monitoring")
+    print(get_sentences_attacked_by_argument(g.driver, "I am affected by bronchial asthma"))
     #g.populate_db()
     
     g.close()
