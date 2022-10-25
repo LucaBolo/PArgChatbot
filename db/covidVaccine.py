@@ -173,7 +173,7 @@ class CovidVaccineGraph:
 
 if __name__ == '__main__':
     g = CovidVaccineGraph("neo4j://localhost:7687", "neo4j", "password")
-    print(get_sentences_attacked_by_argument(g.driver, "I am affected by bronchial asthma"))
+    print(get_arguments_attacking_argument(g.driver, "I am affected by bronchial asthma"))
     #g.populate_db()
     
     g.close()
