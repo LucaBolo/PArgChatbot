@@ -80,14 +80,15 @@ def get_replies_endorsed_by_argument(driver: Neo4jDriver, argument: str):
         return endorsed.value()
 
 def get_node_containing_sentence(driver: Neo4jDriver, sentence: str):
-    '''Return the node containing this sentence'''
+    '''Return the node containing this sentence.
+    It assumes only a single node contains the specific sentence'''
     with driver.session() as session:
 
         node = session.run("""MATCH (n)
-                                WHERE $s in n.sentences
-                                RETURN n""")
+                                WHERE $sentence in n.sentences
+                                RETURN n""", sentence=sentence)
 
-        return node.value()
+        return node.value()[0]
 
 def get_replies(driver: Neo4jDriver):
 
