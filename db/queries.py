@@ -1,14 +1,14 @@
 from neo4j import Neo4jDriver
 
 
-def get_arguments_attacking_response(driver: Neo4jDriver, response: str):
-    '''Returns the attacking arguments to this response, flattened'''
+def get_arguments_attacking_reply(driver: Neo4jDriver, reply: str):
+    '''Returns the attacking arguments to this reply, flattened'''
     with driver.session() as session:
 
         attacking_args = session.run("""MATCH (a:arg)-[:attack]->(re:reply) 
-                                        WHERE $response IN re.sentence
-                                        RETURN a""", response=response)
-        # WHERE $response IN a.sentences 
+                                        WHERE $reply IN re.sentence
+                                        RETURN a""", reply=reply)
+        # WHERE $reply IN a.sentences 
         # WITH COLLECT(DISTINCT a.sentences) as kb
         # [s in kb WHERE s IN  $status] as attacking_args
         return attacking_args.value()
@@ -26,13 +26,13 @@ def get_arguments_attacking_argument(driver: Neo4jDriver, argument: str):
         return attacking_args.value()
 
 
-def get_arguments_endorsing_response(driver: Neo4jDriver, response: str):
-    '''Returns the arguments that endorse this response, flattened'''
+def get_arguments_endorsing_reply(driver: Neo4jDriver, reply: str):
+    '''Returns the arguments that endorse this reply, flattened'''
     with driver.session() as session:
 
         endorsing_args = session.run("""MATCH (a:arg)-[:endorse]->(re:reply) 
-                                        WHERE $response IN re.sentence
-                                        RETURN a""", response=response)
+                                        WHERE $reply IN re.sentence
+                                        RETURN a""", reply=reply)
         
         return endorsing_args.value()
 
@@ -47,7 +47,7 @@ def get_arguments_attacked_by_argument(driver: Neo4jDriver, argument: str):
         
         return attacked.value()
 
-def get_responses_attacked_by_argument(driver: Neo4jDriver, argument: str):
+def get_replies_attacked_by_argument(driver: Neo4jDriver, argument: str):
     '''Returns the reply nodes attacked by given argument'''
     with driver.session() as session:
 
@@ -69,7 +69,7 @@ def get_arguments_endorsed_by_argument(driver: Neo4jDriver, argument: str):
         
         return endorsed.value()
 
-def get_responses_endorsed_by_argument(driver: Neo4jDriver, argument: str):
+def get_replies_endorsed_by_argument(driver: Neo4jDriver, argument: str):
     '''Returns the reply nodes endorsed by given argument'''
     with driver.session() as session:
 
@@ -89,11 +89,11 @@ def get_node_containing_sentence(driver: Neo4jDriver, sentence: str):
 
         return node.value()
 
-def get_responses(driver: Neo4jDriver):
+def get_replies(driver: Neo4jDriver):
 
     with driver.session() as session:
 
-        responses = session.run("""MATCH (r:reply)
+        replies = session.run("""MATCH (r:reply)
                                 RETURN r""")
 
-        return responses.value()
+        return replies.value()
