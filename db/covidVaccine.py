@@ -1,6 +1,5 @@
 from neo4j import GraphDatabase
 
-from queries import *
 
 class CovidVaccineGraph:
 
@@ -171,9 +170,3 @@ class CovidVaccineGraph:
         self.driver.close()
 
 
-if __name__ == '__main__':
-    g = CovidVaccineGraph("neo4j://localhost:7687", "neo4j", "password")
-    print(get_arguments_attacking_argument(g.driver, "I am affected by bronchial asthma"))
-    #g.populate_db()
-    
-    g.close()

@@ -1,3 +1,4 @@
+from neo4j.graph import Node
 
 from db.covidVaccine import CovidVaccineGraph
 from db.queries import (get_arguments_endorsing_reply, 
@@ -18,7 +19,7 @@ class Chatbot:
         self.graph = CovidVaccineGraph("neo4j://localhost:7687", "neo4j", "password")
 
 
-    def explain_why_reply(self, reply: str):
+    def explain_why_reply(self, reply: Node):
         '''Retrieves the argument nodes, among those in the history
         that support the given reply.'''
 
@@ -29,7 +30,7 @@ class Chatbot:
         return supporting_status_args
 
 
-    def explain_why_not_reply(self, reply: str):
+    def explain_why_not_reply(self, reply: Node):
         '''Retrieves the argument nodes, among those in the history
         that attack the given reply'''  
 
@@ -41,7 +42,7 @@ class Chatbot:
 
         return attacking_status_arg
 
-    def is_conflict_free(self, argument: str):
+    def is_conflict_free(self, argument: Node):
         '''Checks whether the given argument
         is in conflict with the ones in the history'''
 
@@ -53,7 +54,7 @@ class Chatbot:
         return not (attacked_ids & self.history_args_id)
 
     
-    def is_consistent_reply(self, reply: str):
+    def is_consistent_reply(self, reply: Node):
         '''Checks whether the reply is consistent. By definition, it is consistent
         if reply is endorsed by the history of arguments, and acceptable, meaning
         if every attack to the reply is attacked by the history. Precondition, history must
@@ -76,7 +77,7 @@ class Chatbot:
         return True
 
 
-    def add_candidate_replies(self, replies):
+    def add_candidate_replies(self, replies: 'list[Node]'):
         '''Adds replies to the candidate replies if 
            1) they are not already present, avoiding duplicates
            2) they are not attacked by arguments in the history'''
@@ -90,16 +91,16 @@ class Chatbot:
         reply = None
         # if user message is not an explanation request
         # add it to the arguments in the chat
-        if self.is_conflict_free(user_msg):
-            arg_node = get_node_containing_sentence(self.graph, user_msg)
+        arg_node = get_node_containing_sentence(self.graph.driver, user_msg)
+        if self.is_conflict_free(arg_node):
             self.history_args.append(arg_node)
-            self.history_args_id.add(arg_node.id)
+            self.history_args_id.add(arg_node.get("id"))
         else:
             return "This user message contradicts previous statements"
 
 
         # retrieve the replies endorsed by the user message. If no messages are returned
-        replies = get_replies_endorsed_by_argument(self.graph, user_msg)
+        replies = get_replies_endorsed_by_argument(self.graph.driver, arg_node)
 
         if len(replies) == 0 and len(self.candidate_replies) == 0:
             return 'reply not found'
@@ -115,14 +116,14 @@ class Chatbot:
 
             else:
                 # potentially consistent
-                attack_args = get_arguments_attacking_reply(self.graph, reply)
+                attack_args = get_arguments_attacking_reply(self.graph.driver, reply)
                 # elicit data from user about possible counterattacks
                 # this method is called for each message
                 # so we need to loop over every attack 
                 # first check whether counterattacks are already in history
                 # then we ask questions to user only for those that aren't
                 for attack_arg in attack_args:
-                    counterattack_args = get_arguments_attacking_argument(self.graph, attack_arg)
+                    counterattack_args = get_arguments_attacking_argument(self.graph.driver, attack_arg)
                     if not any([counterattack_arg.get("id") not in self.history_args_id for counterattack_arg in counterattack_args]):
                         # if there isn't even a single counter attack 
                         # in the history we must elicit info
