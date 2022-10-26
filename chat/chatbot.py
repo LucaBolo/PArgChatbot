@@ -88,7 +88,7 @@ class Chatbot:
                 self.candidate_replies.append(reply) 
 
     def chat(self, user_msg: str):
-        reply = None
+        
         # if user message is not an explanation request
         # add it to the arguments in the chat
         arg_node = get_node_containing_sentence(self.graph.driver, user_msg)
@@ -110,24 +110,27 @@ class Chatbot:
         for candidate_reply in self.candidate_replies[:]:
             if self.is_consistent_reply(candidate_reply):
                 # append it to history of replies and remove it from candidates
+                
                 self.history_replies.append(candidate_reply)
                 self.candidate_replies.remove(candidate_reply)
                 return candidate_reply.get("sentence")[0]
 
             else:
                 # potentially consistent
-                attack_args = get_arguments_attacking_reply(self.graph.driver, reply)
+                attack_args = get_arguments_attacking_reply(self.graph.driver, candidate_reply)
+
                 # elicit data from user about possible counterattacks
                 # this method is called for each message
                 # so we need to loop over every attack 
                 # first check whether counterattacks are already in history
-                # then we ask questions to user only for those that aren't
+                # then we ask questions to user only for those that aren't in history
                 for attack_arg in attack_args:
+
                     counterattack_args = get_arguments_attacking_argument(self.graph.driver, attack_arg)
-                    if not any([counterattack_arg.get("id") not in self.history_args_id for counterattack_arg in counterattack_args]):
+                    if not any([counterattack_arg.get("id") in self.history_args_id for counterattack_arg in counterattack_args]):
                         # if there isn't even a single counter attack 
                         # in the history we must elicit info
                         return counterattack_args[0].get("sentences")[0]
                 # if we reach here, must mean the reply has been made consistent
-                return reply.get("sentence")[0]
+                return candidate_reply.get("sentence")[0]
                         
