@@ -106,3 +106,22 @@ def get_replies(driver: Neo4jDriver):
                                 RETURN r""")
 
         return replies.value()
+
+def get_questions(driver: Neo4jDriver):
+
+    with driver.session() as session:
+
+        questions = session.run("""MATCH (a:arg)
+                                    RETURN a.question""")
+
+        return questions.value()
+
+def get_question_of_node_containing_sentence(driver: Neo4jDriver, sentence: str):
+    with driver.session() as session:
+
+        
+        node = session.run("""MATCH (n)
+                                WHERE $sentence in n.sentences
+                                RETURN n.question""", sentence=sentence)
+
+        return node.value()[0]

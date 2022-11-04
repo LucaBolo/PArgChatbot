@@ -8,7 +8,7 @@ from .db.queries import (get_arguments_endorsing_reply,
                         get_node_containing_sentence,
                         get_replies_endorsed_by_argument)
 
-class Argumentation:
+class ArgumentationManager:
 
 
     def __init__(self) -> None:
