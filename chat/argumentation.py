@@ -1,14 +1,14 @@
 from neo4j.graph import Node
 
-from db.covidVaccine import CovidVaccineGraph
-from db.queries import (get_arguments_endorsing_reply, 
+from .db.covidVaccine import CovidVaccineGraph
+from .db.queries import (get_arguments_endorsing_reply, 
                         get_arguments_attacking_reply, 
                         get_arguments_attacked_by_argument, 
                         get_arguments_attacking_argument,
                         get_node_containing_sentence,
                         get_replies_endorsed_by_argument)
 
-class Chatbot:
+class Argumentation:
 
 
     def __init__(self) -> None:
@@ -87,23 +87,28 @@ class Chatbot:
             if len(self.explain_why_not_reply(reply)) == 0 and reply.get("id") not in candidate_reply_ids:
                 self.candidate_replies.append(reply) 
 
-    def chat(self, user_msg: str):
-        
+    def choose_reply(self, user_msg: str):
+        '''Takes the user message (or rather, the sentence in the KB 
+        most similar to the user message), and returns a consistent reply or,
+        if absent, information the system needs to turn a potentially consistent
+        reply into a consistent one. It also points to the caller whether the response
+        is an elicitation or not'''
         # if user message is not an explanation request
         # add it to the arguments in the chat
+        elicit = False
         arg_node = get_node_containing_sentence(self.graph.driver, user_msg)
         if self.is_conflict_free(arg_node):
             self.history_args.append(arg_node)
             self.history_args_id.add(arg_node.get("id"))
         else:
-            return "This user message contradicts previous statements"
+            return "This user message contradicts previous statements", elicit
 
 
         # retrieve the replies endorsed by the user message. If no messages are returned
         replies = get_replies_endorsed_by_argument(self.graph.driver, arg_node)
 
         if len(replies) == 0 and len(self.candidate_replies) == 0:
-            return 'reply not found'
+            return 'reply not found', elicit
 
         self.add_candidate_replies(replies)    
 
@@ -113,7 +118,7 @@ class Chatbot:
                 
                 self.history_replies.append(candidate_reply)
                 self.candidate_replies.remove(candidate_reply)
-                return candidate_reply.get("sentence")[0]
+                return candidate_reply.get("sentence")[0], elicit
 
             else:
                 # potentially consistent
@@ -130,7 +135,8 @@ class Chatbot:
                     if not any([counterattack_arg.get("id") in self.history_args_id for counterattack_arg in counterattack_args]):
                         # if there isn't even a single counter attack 
                         # in the history we must elicit info
-                        return counterattack_args[0].get("sentences")[0]
+                        elicit = True
+                        return counterattack_args[0].get("sentences")[0], elicit
                 # if we reach here, must mean the reply has been made consistent
                 return candidate_reply.get("sentence")[0]
                         
