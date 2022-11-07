@@ -116,6 +116,15 @@ def get_questions(driver: Neo4jDriver):
 
         return questions.value()
 
+def get_sentences(driver: Neo4jDriver):
+
+    with driver.session() as session:
+
+        sentences = session.run("""MATCH (a:arg)
+                                    RETURN a.sentences""")
+
+        return sentences.value()
+
 def get_question_of_node_containing_sentence(driver: Neo4jDriver, sentence: str):
     with driver.session() as session:
 

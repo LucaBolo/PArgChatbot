@@ -10,6 +10,10 @@ from .db.queries import (get_arguments_endorsing_reply,
 
 class ArgumentationManager:
 
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(ArgumentationManager, cls).__new__(cls)
+        return cls.instance
 
     def __init__(self) -> None:
         self.history_args = [] # history of argument nodes communicated by user
