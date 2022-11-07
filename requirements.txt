@@ -1,3 +1,4 @@
 Flask==2.2.2
 neo4j==5.1.0
 requests==2.28.1
+sentence-transformers==2.2.2
