@@ -5,10 +5,12 @@ from .argumentation import ArgumentationManager
 
 dialogue_blueprint = Blueprint('dialogue_manager', __name__)
 
-@dialogue_blueprint.route("/start", methods=("GET",))
+@dialogue_blueprint.route("/", methods=("GET",))
 def start_conversation():
-    return """Hello, I will help you decide where you can vaccinate for Covid19. I am going to ask you
-    a series of questions to give you the best answer. This information will never leave your device. Is it ok?"""
+    return {"data": """Hello, I will help you decide where you can vaccinate for Covid19. You may share
+    with me any medical condition you suffer or suffered from. This information will never leave your device."""}
+
+
 
 @dialogue_blueprint.route("/chat", methods=("GET",))
 def chat(user_msg: str):
