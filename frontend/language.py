@@ -3,7 +3,8 @@ from torch import argmin, Tensor
 from scipy.spatial.distance import braycurtis
 
 def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
-
+    '''Finds the closest sentence embedding to the user 
+    message in terms of Bray-Curtis similarity'''
     model = SentenceTransformer("paraphrase-mpnet-base-v2")
 
     # kb embeddings should not be computed everytime but cached

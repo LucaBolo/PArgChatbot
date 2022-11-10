@@ -45,11 +45,13 @@ class MainWindow:
         self.window.mainloop()
     
     def process_queue(self):
+        '''Checks for new items in the queue'''
         try:
             msg = self.queue.get_nowait()
+
             self.write_chat_area("end", msg["data"])
             # Show result of the task if needed
-            
+            self.window.after(500, self.process_queue)
         except queue.Empty:
             self.window.after(500, self.process_queue)
 
