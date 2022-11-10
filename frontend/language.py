@@ -1,5 +1,6 @@
-from sentence_transformers import SentenceTransformer, util
-
+from sentence_transformers import SentenceTransformer
+from torch import argmin, Tensor
+from scipy.spatial.distance import braycurtis
 
 def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
 
@@ -9,19 +10,18 @@ def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
     kb_embeddings = model.encode(kb, convert_to_tensor=True)
     user_embedding = model.encode(user_msg, convert_to_tensor=True)
 
-    # they don't exactly use cosine similarity
-    cosine_scores = util.cos_sim(user_embedding, kb_embeddings) 
+    
+    distances = Tensor([braycurtis(user_embedding, kb_embedding) for kb_embedding in kb_embeddings]) 
 
-    print(kb)
-    print(cosine_scores)
+    return kb[argmin(distances)]
     
 
 
-if __name__ == '__main__':
-    import requests
+#if __name__ == '__main__':
+#    import requests
 
-    r = requests.get("http://127.0.0.1:5000/sentences")
+#    r = requests.get("http://127.0.0.1:5000/sentences")
 
-    kb = r.json()["data"]
+#    kb = r.json()["data"]
 
-    get_most_similar_sentence("In the past, I had crippling mastocystosis", kb)
+#    print(get_most_similar_sentence("In the past, I had crippling mastocystosis", kb))

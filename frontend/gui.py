@@ -1,6 +1,10 @@
 from tkinter import *
 from tkinter import ttk
+import queue
+
 import requests
+
+from controller import Controller
 
 class MainWindow:
 
@@ -30,24 +34,46 @@ class MainWindow:
         
         self.chat_area["state"] = "disabled"
 
-        def post_user_message(e):
-
-            msg = self.input_area.get(1.0, END)
-            self.input_area.delete(1.0, END)
-            
-            self.chat_area["state"] = "normal"
-            self.chat_area.insert("end", msg)
-            self.chat_area["state"] = "disabled"
         
-        self.input_area.bind('<Return>', post_user_message)
+        
 
+        self.queue = queue.Queue()
+        self.controller = Controller(self, self.queue)
+        self.input_area.bind('<Return>', self.controller.post_user_message)
+
+        self.process_queue()
         self.window.mainloop()
     
+    def process_queue(self):
+        try:
+            msg = self.queue.get_nowait()
+            self.write_chat_area("end", msg["data"])
+            # Show result of the task if needed
+            
+        except queue.Empty:
+            self.window.after(500, self.process_queue)
+
     
-        
+    def get_delete_user_input(self, delete=True):
+        '''Reads the string user input
+        and deletes it, by default'''
+        msg = self.input_area.get(1.0, END)
+        if delete:
+            self.input_area.delete(1.0, END)
+
+        return msg
+
+    def write_chat_area(self, index, msg):
+        '''Enables chat text area 
+        to allow writing function
+        then disables it again'''
+        self.chat_area["state"] = "normal"
+        #self.chat_area.insert("end", msg)
+        self.chat_area.insert(index, msg+"\n\n")
+        self.chat_area["state"] = "disabled"
+
     
 
 if __name__ == '__main__':
     main_window = MainWindow()
-
-    main_window.listen_user_input()
+    

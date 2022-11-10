@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask import request
 
 from .argumentation import ArgumentationManager
 from .db.queries import get_sentences
@@ -17,9 +18,9 @@ def get_kb_sentences():
     return {"data": [sentence for sentences in get_sentences(arg_manager.graph.driver) for sentence in sentences]}
 
 @dialogue_blueprint.route("/chat", methods=("GET",))
-def chat(user_msg: str):
+def chat():
+    
+    reply = arg_manager.choose_reply(request.args["usr_msg"])
 
-    reply, elicit = arg_manager.choose_reply(user_msg)
-
-    if not elicit:
-        return {"data": reply}
+    
+    return {"data": reply}

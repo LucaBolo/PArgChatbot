@@ -99,20 +99,19 @@ class ArgumentationManager:
         is an elicitation or not'''
         # if user message is not an explanation request
         # add it to the arguments in the chat
-        elicit = False
         arg_node = get_node_containing_sentence(self.graph.driver, user_msg)
         if self.is_conflict_free(arg_node):
             self.history_args.append(arg_node)
             self.history_args_id.add(arg_node.get("id"))
         else:
-            return "This user message contradicts previous statements", elicit
+            return "This user message contradicts previous statements"
 
 
         # retrieve the replies endorsed by the user message. If no messages are returned
         replies = get_replies_endorsed_by_argument(self.graph.driver, arg_node)
 
         if len(replies) == 0 and len(self.candidate_replies) == 0:
-            return 'reply not found', elicit
+            return 'reply not found'
 
         self.add_candidate_replies(replies)    
 
@@ -122,7 +121,7 @@ class ArgumentationManager:
                 
                 self.history_replies.append(candidate_reply)
                 self.candidate_replies.remove(candidate_reply)
-                return candidate_reply.get("sentence")[0], elicit
+                return candidate_reply.get("sentence")[0]
 
             else:
                 # potentially consistent
@@ -139,8 +138,7 @@ class ArgumentationManager:
                     if not any([counterattack_arg.get("id") in self.history_args_id for counterattack_arg in counterattack_args]):
                         # if there isn't even a single counter attack 
                         # in the history we must elicit info
-                        elicit = True
-                        return counterattack_args[0].get("sentences")[0], elicit
+                        return counterattack_args[0].get("question")
                 # if we reach here, must mean the reply has been made consistent
                 return candidate_reply.get("sentence")[0]
                         
