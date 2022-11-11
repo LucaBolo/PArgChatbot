@@ -85,8 +85,10 @@ class ArgumentationManager:
         '''Adds replies to the candidate replies if 
            1) they are not already present, avoiding duplicates
            2) they are not attacked by arguments in the history'''
-        candidate_reply_ids = [reply.get('id') for reply in self.candidate_replies]
         
+
+        candidate_reply_ids = [reply.get('id') for reply in self.candidate_replies]
+
         for reply in replies:
             if len(self.explain_why_not_reply(reply)) == 0 and reply.get("id") not in candidate_reply_ids:
                 self.candidate_replies.append(reply) 
@@ -99,6 +101,7 @@ class ArgumentationManager:
         is an elicitation or not'''
         # if user message is not an explanation request
         # add it to the arguments in the chat
+
         arg_node = get_node_containing_sentence(self.graph.driver, user_msg)
         if self.is_conflict_free(arg_node):
             self.history_args.append(arg_node)
@@ -112,8 +115,11 @@ class ArgumentationManager:
 
         if len(replies) == 0 and len(self.candidate_replies) == 0:
             return 'reply not found'
-
+        
+        # filter past candidate replies that are no longer compatible with newly added argument
+        self.candidate_replies = list(filter(lambda candidate_reply : len(self.explain_why_not_reply(candidate_reply)) > 0, self.candidate_replies))
         self.add_candidate_replies(replies)    
+
 
         for candidate_reply in self.candidate_replies[:]:
             if self.is_consistent_reply(candidate_reply):
