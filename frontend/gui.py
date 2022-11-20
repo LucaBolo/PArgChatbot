@@ -77,15 +77,12 @@ class MainWindow:
     
 
 if __name__ == '__main__':
-    from language.svm import DialogueActClassifier 
-    import os
-    
-    current_module_path = os.path.dirname(os.path.realpath(__file__))
-    d_classifier = DialogueActClassifier(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'language\diag_act_dataset.csv'), 
-        os.path.join(current_module_path, 'language\svc.joblib'))
+    #current_module_path = os.path.dirname(os.path.realpath(__file__))
+    #d_classifier = DialogueActClassifier(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'language\diag_act_dataset.csv'), 
+    #    os.path.join(current_module_path, 'language\svc.joblib'))
 
     # train_texts, test_texts, train_labels, test_labels = d_classifier.prepare_data()
     # model = d_classifier.train(train_texts, train_labels)
-    print(d_classifier.predict(["but of course"]))
-    #main_window = MainWindow()
+    #print(d_classifier.predict(["but of course"]))
+    main_window = MainWindow()
     

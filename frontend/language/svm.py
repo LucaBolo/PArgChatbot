@@ -38,7 +38,7 @@ class DialogueActClassifier:
             grid_classifier = GridSearchCV(model, parameters, cv=folds, scoring=scoring) # micro bc class imbalance
             
             current_module_path = os.path.dirname(os.path.realpath(__file__))
-            train_embeddings = get_embeddings(train_texts, os.path.join(current_module_path,'..', 'train_embs.json'))
+            train_embeddings = get_embeddings(train_texts, os.path.join(current_module_path, 'train_embs.json'))
 
             grid_classifier.fit(train_embeddings, train_labels)
 

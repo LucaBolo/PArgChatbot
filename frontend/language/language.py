@@ -13,8 +13,11 @@ def get_embeddings(sentences: 'list[str]', embedding_file = None):
         with open(os.path.join(os.getcwd(), embedding_file), 'w') as f:
             json.dump(embedding_obj, f)
     elif embedding_file and os.path.exists(embedding_file):
+        
         with open(os.path.join(os.getcwd(),embedding_file), 'r') as f:
-            emb = np.array(json.load(f).values())
+            emb = list(json.load(f).values())
+            emb = np.array(emb)
+            
     
     else:
         emb = model.encode(sentences, convert_to_numpy = True)
@@ -26,12 +29,18 @@ def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
     '''Finds the closest sentence embedding to the user 
     message in terms of Bray-Curtis similarity'''
     
-    kb_embeddings = get_embeddings(kb, 'embs.json')
+    current_module_path = os.path.dirname(os.path.realpath(__file__))
+    kb_embeddings = get_embeddings(kb, os.path.join(current_module_path, 'kb_embs.json'))
     user_embedding = get_embeddings(user_msg)
     
+    print(kb_embeddings)
     distances = [braycurtis(user_embedding, kb_embedding) for kb_embedding in kb_embeddings]
+    
+    index = np.argmin(distances)
 
-    return kb[np.argmin(distances)]
+    print(distances, distances[index])
+
+    return kb[index]
     
 
 

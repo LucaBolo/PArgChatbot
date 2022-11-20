@@ -16,12 +16,14 @@ class ArgumentationManager:
         return cls.instance
 
     def __init__(self) -> None:
+        self.graph = CovidVaccineGraph("neo4j://localhost:7687", "neo4j", "password")
+        self.clear()
+
+    def clear(self):
         self.history_args = [] # history of argument nodes communicated by user
         self.history_replies = [] # history of reply nodes given to user
         self.history_args_id = set()
         self.candidate_replies = []
-        self.graph = CovidVaccineGraph("neo4j://localhost:7687", "neo4j", "password")
-
 
     def explain_why_reply(self, reply: Node):
         '''Retrieves the argument nodes, among those in the history
