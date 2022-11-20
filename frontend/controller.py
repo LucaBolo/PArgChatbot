@@ -1,7 +1,7 @@
 import requests
 import threading
 
-from language import get_most_similar_sentence
+from language.language import get_most_similar_sentence
 
 class Controller:
 
