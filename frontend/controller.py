@@ -30,3 +30,16 @@ class Controller:
         res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentence})
 
         self.queue.put(res.json())
+
+    def on_close(self):
+
+        def clear_history():
+            res = requests.get("http://127.0.0.1:5000/close")
+
+            self.queue.put(res.json())
+
+
+        t = threading.Thread(target=clear_history)
+        t.start()
+        
+

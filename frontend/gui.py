@@ -40,18 +40,23 @@ class MainWindow:
         self.queue = queue.Queue()
         self.controller = Controller(self, self.queue)
         self.input_area.bind('<Return>', self.controller.post_user_message)
+        self.window.protocol("WM_DELETE_WINDOW", self.controller.on_close)
 
         self.process_queue()
         self.window.mainloop()
     
+
+
     def process_queue(self):
         '''Checks for new items in the queue'''
         try:
             msg = self.queue.get_nowait()
-
-            self.write_chat_area("end", msg["data"])
-            # Show result of the task if needed
-            self.window.after(500, self.process_queue)
+            if msg["data"] == "QUIT":
+                self.window.destroy()
+            else:    
+                self.write_chat_area("end", msg["data"])
+                # Show result of the task if needed
+                self.window.after(500, self.process_queue)
         except queue.Empty:
             self.window.after(500, self.process_queue)
 

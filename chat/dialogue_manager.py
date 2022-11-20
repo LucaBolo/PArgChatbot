@@ -24,3 +24,11 @@ def chat():
 
     
     return {"data": reply}
+
+
+@dialogue_blueprint.route("/close", methods=("GET",))
+def clear_history():
+
+    arg_manager.clear()
+
+    return {"data": "QUIT"}
