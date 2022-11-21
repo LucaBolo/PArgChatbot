@@ -28,8 +28,8 @@ class MainWindow:
         first_msg = requests.get("http://127.0.0.1:5000")
 
         if first_msg.status_code == 200:
-            
-            self.chat_area.insert("1.0", ' '.join(first_msg.json()["data"].split()) + "\n\n") # splitting and joining to eliminate tabs and line breaks
+            greeting = ' '.join(first_msg.json()["data"].split()) + "\n"
+            self.write_chat_area("end", greeting) # splitting and joining to eliminate tabs and line breaks
 
         
         self.chat_area["state"] = "disabled"
@@ -76,9 +76,16 @@ class MainWindow:
         then disables it again'''
         self.chat_area["state"] = "normal"
         #self.chat_area.insert("end", msg)
-        self.chat_area.insert(index, msg+"\n\n")
+        self.chat_area.insert(index, msg+"\n")
         self.chat_area["state"] = "disabled"
 
+    def get_last_text_chat_area(self):
+        #print(self.chat_area.index("end"))
+        #print(self.chat_area.index("end -1 lines"))
+        #print(self.chat_area.index("end -2 lines"))
+        #print(self.chat_area.index("end -1 chars"))
+        #print(self.chat_area.get(1.0, "end"))
+        return self.chat_area.get("end -4 lines", "end")
     
 
 if __name__ == '__main__':

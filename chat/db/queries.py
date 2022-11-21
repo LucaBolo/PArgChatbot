@@ -129,8 +129,18 @@ def get_question_of_node_containing_sentence(driver: Neo4jDriver, sentence: str)
     with driver.session() as session:
 
         
-        node = session.run("""MATCH (n)
+        question = session.run("""MATCH (n)
                                 WHERE $sentence in n.sentences
                                 RETURN n.question""", sentence=sentence)
 
-        return node.value()[0]
+        return question.value()[0]
+
+def get_argument_from_question(driver: Neo4jDriver, question: str, _class: str):
+    with driver.session() as session:
+
+        sentences = session.run("""MATCH (n:arg)
+                                WHERE $question = n.question
+                                AND $_class = n.class
+                                RETURN n.sentences""", question=question, _class=_class)
+
+        return sentences.value()[0]

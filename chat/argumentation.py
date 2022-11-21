@@ -43,7 +43,7 @@ class ArgumentationManager:
         attacking_args = get_arguments_attacking_reply(self.graph.driver, reply)
 
         # arguments in the status set of arguments already collected
-        # for user that also attack the reply``
+        # for user that also attack the reply
         attacking_status_arg = [node for node in attacking_args if node.id in self.history_args_id]
 
         return attacking_status_arg
@@ -99,8 +99,7 @@ class ArgumentationManager:
         '''Takes the user message (or rather, the sentence in the KB 
         most similar to the user message), and returns a consistent reply or,
         if absent, information the system needs to turn a potentially consistent
-        reply into a consistent one. It also points to the caller whether the response
-        is an elicitation or not'''
+        reply into a consistent one.'''
         # if user message is not an explanation request
         # add it to the arguments in the chat
 
@@ -111,18 +110,18 @@ class ArgumentationManager:
         else:
             return "This user message contradicts previous statements"
 
-
         # retrieve the replies endorsed by the user message. If no messages are returned
         replies = get_replies_endorsed_by_argument(self.graph.driver, arg_node)
 
         if len(replies) == 0 and len(self.candidate_replies) == 0:
-            return 'reply not found'
+            return 'No consistent answer has been found'
         
         # filter past candidate replies that are no longer compatible with newly added argument
+        # explain why not retrieves argument in the history attacking the given reply
         self.candidate_replies = list(filter(lambda candidate_reply : len(self.explain_why_not_reply(candidate_reply)) > 0, self.candidate_replies))
         self.add_candidate_replies(replies)    
 
-
+        # if there is even a single consistent reply we return it to the user
         for candidate_reply in self.candidate_replies[:]:
             if self.is_consistent_reply(candidate_reply):
                 # append it to history of replies and remove it from candidates
@@ -131,22 +130,31 @@ class ArgumentationManager:
                 self.candidate_replies.remove(candidate_reply)
                 return candidate_reply.get("sentence")[0]
 
-            else:
-                # potentially consistent
-                attack_args = get_arguments_attacking_reply(self.graph.driver, candidate_reply)
+        for candidate_reply in self.candidate_replies[:]:
+            # potentially consistent
+            attack_args = get_arguments_attacking_reply(self.graph.driver, candidate_reply)
 
-                # elicit data from user about possible counterattacks
-                # this method is called for each message
-                # so we need to loop over every attack 
-                # first check whether counterattacks are already in history
-                # then we ask questions to user only for those that aren't in history
-                for attack_arg in attack_args:
+            # elicit data from user about possible counterattacks
+            # this method is called for each message
+            # so we need to loop over every attack 
+            # first check whether counterattacks are already in history
+            # then we ask questions to user only for those that aren't in history
+            for attack_arg in attack_args:
 
-                    counterattack_args = get_arguments_attacking_argument(self.graph.driver, attack_arg)
-                    if not any([counterattack_arg.get("id") in self.history_args_id for counterattack_arg in counterattack_args]):
-                        # if there isn't even a single counter attack 
-                        # in the history we must elicit info
-                        return counterattack_args[0].get("question")
-                # if we reach here, must mean the reply has been made consistent
-                return candidate_reply.get("sentence")[0]
-                        
+                counterattack_args = get_arguments_attacking_argument(self.graph.driver, attack_arg)
+                # if with a user saying no we cannot ask the same question again
+                # we have to skip. But careful any([]) is False
+                if not any([counterattack_arg.get("id") in self.history_args_id for counterattack_arg in counterattack_args]):
+                    # if there isn't even a single counter attack 
+                    # in the history we must elicit info
+                    return counterattack_args[0].get("question") 
+            # if we reach here, must mean the reply has been made consistent
+            return candidate_reply.get("sentence")[0]
+
+        return "No consistent answer has been found"
+
+
+    # def select_defence_nodes()
+    # for attack in attack_args
+    #   take the counterattacks for each attack and put them all in a list
+    #   this will be cal          

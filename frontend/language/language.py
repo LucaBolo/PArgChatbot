@@ -20,7 +20,10 @@ def get_embeddings(sentences: 'list[str]', embedding_file = None):
             
     
     else:
+        # this is the case when we want to create
+        # temporary embeddings for predictions, don't want to store a file
         emb = model.encode(sentences, convert_to_numpy = True)
+        
 
     return emb
 
@@ -33,13 +36,11 @@ def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
     kb_embeddings = get_embeddings(kb, os.path.join(current_module_path, 'kb_embs.json'))
     user_embedding = get_embeddings(user_msg)
     
-    print(kb_embeddings)
+    
     distances = [braycurtis(user_embedding, kb_embedding) for kb_embedding in kb_embeddings]
     
     index = np.argmin(distances)
 
-    print(distances, distances[index])
-
-    return kb[index]
+    return kb[index], distances[index]
     
 

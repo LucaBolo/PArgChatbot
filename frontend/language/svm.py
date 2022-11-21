@@ -58,8 +58,8 @@ class DialogueActClassifier:
         model = load(self.model_path)
 
         test_embeddings = get_embeddings(sentence)
-        print(test_embeddings.shape)
-        pred = model.predict(test_embeddings)
+        
+        pred = model.predict(test_embeddings.reshape(1,-1))
 
         if pred in ['y', 'y-d']:
             return 'yes'
