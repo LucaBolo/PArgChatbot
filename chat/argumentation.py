@@ -1,4 +1,5 @@
 from neo4j.graph import Node
+from enum import Enum
 
 from .db.covidVaccine import CovidVaccineGraph
 from .db.queries import (get_arguments_endorsing_reply, 
@@ -6,7 +7,10 @@ from .db.queries import (get_arguments_endorsing_reply,
                         get_arguments_attacked_by_argument, 
                         get_arguments_attacking_argument,
                         get_node_containing_sentence,
-                        get_replies_endorsed_by_argument)
+                        get_replies_endorsed_by_argument,
+                        get_replies)
+
+
 
 class ArgumentationManager:
 
@@ -30,9 +34,9 @@ class ArgumentationManager:
         that support the given reply.'''
 
         endorsing_args = get_arguments_endorsing_reply(self.graph.driver, reply)
-
-        supporting_status_args = [node for node in endorsing_args if node.id in self.history_args_id]
-
+        
+        supporting_status_args = [node for node in endorsing_args if node.get("id") in self.history_args_id]
+        
         return supporting_status_args
 
 
@@ -41,12 +45,52 @@ class ArgumentationManager:
         that attack the given reply'''  
 
         attacking_args = get_arguments_attacking_reply(self.graph.driver, reply)
-
+        
+        
         # arguments in the status set of arguments already collected
         # for user that also attack the reply
-        attacking_status_arg = [node for node in attacking_args if node.id in self.history_args_id]
+        attacking_status_arg = [node for node in attacking_args if node.get("id") in self.history_args_id]
 
         return attacking_status_arg
+
+    def build_explanation(self, reply: Node):
+
+        replies = get_replies(self.graph.driver)
+        discarded_replies = list(filter(lambda r : reply.get("id") != r.get("id"), replies))
+        #print(self.explain_why_reply(reply))
+        supporting_args_sentences = [why.get("sentences")[0] for why in self.explain_why_reply(reply)]
+
+        #print(supporting_args_sentences)
+        template_args = {
+            "I": "You",
+            "I am": "You are",
+            "I'm": "You are",
+            "me": "you"
+        }
+
+        def replace_template(sentence):
+            for k, v in template_args.items():
+                sentence = sentence.replace(k,v)
+            return sentence
+
+
+        explanation = ".\nThis answer is supported by what you said: " + ', '.join([replace_template(supporting_arg_sentence) for supporting_arg_sentence in supporting_args_sentences])
+        explanation += ". Furthermore, "
+        
+        for discarded_reply in discarded_replies:
+            
+            explanation += f"you can't {discarded_reply.get('sentence')[0].lower().replace('.', ' with ')} because "
+            whynots = self.explain_why_not_reply(discarded_reply)
+            #print(whynots)
+            for whynot in whynots:
+                #print(whynot.get("sentences")[0])
+                
+                explanation += replace_template(whynot.get("sentences")[0])
+
+
+            explanation += " and "
+        
+        return explanation                
 
     def is_conflict_free(self, argument: Node):
         '''Checks whether the given argument
@@ -128,7 +172,10 @@ class ArgumentationManager:
                 
                 self.history_replies.append(candidate_reply)
                 self.candidate_replies.remove(candidate_reply)
-                return candidate_reply.get("sentence")[0]
+
+                expl = self.build_explanation(candidate_reply)
+
+                return candidate_reply.get("sentence")[0] + expl
 
         for candidate_reply in self.candidate_replies[:]:
             # potentially consistent
@@ -151,10 +198,4 @@ class ArgumentationManager:
             # if we reach here, must mean the reply has been made consistent
             return candidate_reply.get("sentence")[0]
 
-        return "No consistent answer has been found"
-
-
-    # def select_defence_nodes()
-    # for attack in attack_args
-    #   take the counterattacks for each attack and put them all in a list
-    #   this will be cal          
+        return "No consistent answer has been found"    

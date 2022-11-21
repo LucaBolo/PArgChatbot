@@ -44,7 +44,6 @@ def chat():
         pass
     
     reply = arg_manager.choose_reply(usr_msg)
-
     
     return {"data": reply}
 

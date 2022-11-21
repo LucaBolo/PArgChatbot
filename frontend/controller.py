@@ -14,8 +14,7 @@ class Controller:
 
     
     def post_user_message(self, e):
-        last_text = self.gui.get_last_text_chat_area()
-        print(last_text)
+        
         msg = self.gui.get_delete_user_input()
         
         self.gui.write_chat_area("end", msg)
