@@ -74,21 +74,20 @@ class ArgumentationManager:
             return sentence
 
 
-        explanation = ".\nThis answer is supported by what you said: " + ', '.join([replace_template(supporting_arg_sentence) for supporting_arg_sentence in supporting_args_sentences])
-        explanation += ". Furthermore, "
+        explanation = ".\nThis answer is supported by what you said: \n" + ', '.join([replace_template(supporting_arg_sentence) for supporting_arg_sentence in supporting_args_sentences])
+        
         
         for discarded_reply in discarded_replies:
-            
-            explanation += f"you can't {discarded_reply.get('sentence')[0].lower().replace('.', ' with ')} because "
+            explanation += "\nFurthermore, "
+            explanation += f"you can't {discarded_reply.get('sentence')[0].lower().replace('.', ' with ')} because \n"
             whynots = self.explain_why_not_reply(discarded_reply)
             #print(whynots)
             for whynot in whynots:
                 #print(whynot.get("sentences")[0])
                 
-                explanation += replace_template(whynot.get("sentences")[0])
+                explanation += replace_template(whynot.get("sentences")[0]) + "\n"
 
-
-            explanation += " and "
+            explanation += "\n"
         
         return explanation                
 
@@ -162,9 +161,8 @@ class ArgumentationManager:
         
         # filter past candidate replies that are no longer compatible with newly added argument
         # explain why not retrieves argument in the history attacking the given reply
-        self.candidate_replies = list(filter(lambda candidate_reply : len(self.explain_why_not_reply(candidate_reply)) > 0, self.candidate_replies))
+        self.candidate_replies = list(filter(lambda candidate_reply : len(self.explain_why_not_reply(candidate_reply)) == 0, self.candidate_replies))
         self.add_candidate_replies(replies)    
-
         # if there is even a single consistent reply we return it to the user
         for candidate_reply in self.candidate_replies[:]:
             if self.is_consistent_reply(candidate_reply):

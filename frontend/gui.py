@@ -68,7 +68,7 @@ class MainWindow:
         if delete:
             self.input_area.delete(1.0, END)
 
-        return msg
+        return "\n" + ' '.join(msg.split()) + "\n"
 
     def write_chat_area(self, index, msg):
         '''Enables chat text area 
@@ -79,14 +79,6 @@ class MainWindow:
         self.chat_area.insert(index, msg+"\n")
         self.chat_area["state"] = "disabled"
 
-    def get_last_text_chat_area(self):
-        #print(self.chat_area.index("end"))
-        #print(self.chat_area.index("end -1 lines"))
-        #print(self.chat_area.index("end -2 lines"))
-        #print(self.chat_area.index("end -1 chars"))
-        #print(self.chat_area.get(1.0, "end"))
-        return self.chat_area.get("end -4 lines", "end")
-    
 
 if __name__ == '__main__':
     #current_module_path = os.path.dirname(os.path.realpath(__file__))

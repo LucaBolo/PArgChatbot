@@ -34,7 +34,6 @@ class Controller:
         sentence, distance = get_most_similar_sentence(msg, kb)
         
         intent = 'other'
-        print(distance)
         if distance > 0.4: # threshold for now arbitrary
             # user message isn't close enough to sentences in kb
             # so the sentence we send to server is the last response

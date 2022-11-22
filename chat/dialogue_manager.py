@@ -34,7 +34,9 @@ def chat():
 
         # user responded negatively to question
         # we look for a sentence in the node containing the question with negative class
+        print(usr_msg)
         usr_msg = get_argument_from_question(arg_manager.graph.driver, usr_msg, 'n')
+        print(usr_msg)
         if len(usr_msg):
             usr_msg = usr_msg[0]
         else:
