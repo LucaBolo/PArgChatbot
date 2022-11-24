@@ -17,7 +17,6 @@ class Controller:
         '''Copies user input in chat area
         then requests the server for a reply'''
         msg = self.gui.get_delete_user_input()
-        
         self.gui.write_chat_area("end", msg)
 
         t = threading.Thread(target=self.get_bot_reply, args=(msg,))
@@ -69,6 +68,7 @@ class Controller:
 
             self.queue.put(greeting)
 
+        self.gui.button["state"] = "disabled"
         self.gui.input_area["state"] = "normal"
         t = threading.Thread(target=greeting)
         t.start()
