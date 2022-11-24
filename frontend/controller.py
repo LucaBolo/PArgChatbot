@@ -14,7 +14,8 @@ class Controller:
 
     
     def post_user_message(self, e):
-        
+        '''Copies user input in chat area
+        then requests the server for a reply'''
         msg = self.gui.get_delete_user_input()
         
         self.gui.write_chat_area("end", msg)
@@ -43,17 +44,35 @@ class Controller:
             
         res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentence, "usr_intent": intent})
         self.last_bot_response = res.json()["data"]
-        self.queue.put(res.json())
+        self.queue.put(self.last_bot_response)
 
     def on_close(self):
 
         def clear_history():
             res = requests.get("http://127.0.0.1:5000/close")
 
-            self.queue.put(res.json())
+            self.queue.put(res.json()["data"])
 
 
         t = threading.Thread(target=clear_history)
         t.start()
+
+    def start_conversation(self):
+
+
+        def greeting():
+            requests.get("http://127.0.0.1:5000/close")
+            first_msg = requests.get("http://127.0.0.1:5000")
+
+            greeting = ' '.join(first_msg.json()["data"].split()) + "\n"
+            #self.write_chat_area("end", greeting) # splitting and joining to eliminate tabs and line breaks
+
+            self.queue.put(greeting)
+
+        self.gui.input_area["state"] = "normal"
+        t = threading.Thread(target=greeting)
+        t.start()
+        
+        
         
 

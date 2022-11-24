@@ -12,33 +12,30 @@ class MainWindow:
         self.window = Tk()
         self.window.title("CovBot")
         self.mainframe = ttk.Frame(self.window, width=640, height=480)
-        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S), columnspan=3, rowspan=3)
         self.window.columnconfigure(0, weight=1)
         self.window.rowconfigure(0, weight=1) 
 
-        self.chat_area = Text(self.mainframe, padx=10, pady=10, borderwidth=5)
-        self.chat_area.grid(column=2, row=2, padx=10, pady=20)
+        self.chat_area = Text(self.mainframe, borderwidth=5)
+        self.chat_area.grid(column=1, row=1, padx=10, pady=20, columnspan=2)
 
         self.input_area = Text(self.mainframe, height=3)
-        self.input_area.grid(column=2, row=3)
+        self.input_area.grid(column=1, row=2, padx=10, pady=10, columnspan=1)
+
+        self.queue = queue.Queue()
+        self.controller = Controller(self, self.queue)
 
         for child in self.window.winfo_children(): 
             child.grid_configure(padx=20, pady=5)
 
-        first_msg = requests.get("http://127.0.0.1:5000")
-
-        if first_msg.status_code == 200:
-            greeting = ' '.join(first_msg.json()["data"].split()) + "\n"
-            self.write_chat_area("end", greeting) # splitting and joining to eliminate tabs and line breaks
-
         
         self.chat_area["state"] = "disabled"
+        self.input_area["state"] = "disabled"        
+        
+        self.button = ttk.Button(self.mainframe, text='Start!', command=self.controller.start_conversation)
+        self.button.grid(column=2, row=2, padx=10, pady=10, columnspan=1)
 
         
-        
-
-        self.queue = queue.Queue()
-        self.controller = Controller(self, self.queue)
         self.input_area.bind('<Return>', self.controller.post_user_message)
         self.window.protocol("WM_DELETE_WINDOW", self.controller.on_close)
 
@@ -46,16 +43,19 @@ class MainWindow:
         self.window.mainloop()
     
 
-
     def process_queue(self):
-        '''Checks for new items in the queue'''
+        '''Checks for new messages in the queue
+        from background threads'''
         try:
             msg = self.queue.get_nowait()
-            if msg["data"] == "QUIT":
+            if msg == "QUIT": # user quits the window
                 self.window.destroy()
             else:    
-                self.write_chat_area("end", msg["data"])
-                # Show result of the task if needed
+                self.write_chat_area("end", msg)
+                if "==END==" in msg: # end of conversation
+                    self.chat_area["state"] = "disabled"
+                    self.input_area["state"] = "disabled"
+                
                 self.window.after(500, self.process_queue)
         except queue.Empty:
             self.window.after(500, self.process_queue)
