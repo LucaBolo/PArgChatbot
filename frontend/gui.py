@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import queue
 
-import requests
+import sys
 
 from controller import Controller
 
@@ -81,12 +81,14 @@ class MainWindow:
 
 
 if __name__ == '__main__':
-    #current_module_path = os.path.dirname(os.path.realpath(__file__))
-    #d_classifier = DialogueActClassifier(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'language\diag_act_dataset.csv'), 
-    #    os.path.join(current_module_path, 'language\svc.joblib'))
+    if len(sys.argv) > 1 and sys.argv[1] == "train":
+        from language.svm import DialogueActClassifier
 
-    # train_texts, test_texts, train_labels, test_labels = d_classifier.prepare_data()
-    # model = d_classifier.train(train_texts, train_labels)
-    #print(d_classifier.predict(["but of course"]))
-    main_window = MainWindow()
+        classifier = DialogueActClassifier("./language/diag_act_dataset.csv", "./language/svc.joblib")
+
+        train_texts, test_texts, train_labels, test_labels = classifier.prepare_data()
+
+        model = classifier.train(train_texts, train_labels)
+    else:
+        main_window = MainWindow()
     

@@ -1,10 +1,11 @@
 import pandas as pd
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sentence_transformers import SentenceTransformer
 from sklearn.svm import SVC
 from joblib import dump, load
 import os
-from .language import get_embeddings
+from language.language import get_embeddings
+
+
 
 class DialogueActClassifier:
 
@@ -23,7 +24,7 @@ class DialogueActClassifier:
         labels = df['dialogue_act']
         train = df.drop(['dialogue_act', 'Q/A'], axis=1)
 
-        train_texts, test_texts, train_labels, test_labels = train_test_split(train, labels, test_size=0.1, random_state=42, shuffle=False)
+        train_texts, test_texts, train_labels, test_labels = train_test_split(train, labels, test_size=test_size, random_state=42, shuffle=False)
         train_texts, test_texts, train_labels, test_labels = train_texts.values.ravel(), test_texts.values.ravel(), train_labels.values, test_labels.values
         return train_texts, test_texts, train_labels, test_labels
 
@@ -67,6 +68,5 @@ class DialogueActClassifier:
             return 'no'
         else:
             return 'why'
-
 
 
