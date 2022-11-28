@@ -73,13 +73,13 @@ class ArgumentationManager:
                 sentence = sentence.replace(k,v)
             return sentence
 
-
         explanation = ".\nThis answer is supported by what you said: \n" + ', '.join([replace_template(supporting_arg_sentence) for supporting_arg_sentence in supporting_args_sentences])
+            
         explanation += "\n\n"
-        
+
         for discarded_reply in discarded_replies:
-            explanation += "Furthermore, "
-            explanation += f"you can't {discarded_reply.get('sentence')[0].lower().replace('.', ' with ')} because \n"
+            
+            explanation += f"You can't {discarded_reply.get('sentence')[0].lower().replace('.', ' with ')} because \n"
             whynots = self.explain_why_not_reply(discarded_reply)
             #print(whynots)
             for whynot in whynots:
@@ -172,8 +172,6 @@ class ArgumentationManager:
                 self.candidate_replies.remove(candidate_reply)
 
                 expl = self.build_explanation(candidate_reply)
-                print("consistent reply initial check")
-                print(expl)
                 return candidate_reply.get("sentence")[0] + expl + "\n==END==\n"
 
         for candidate_reply in self.candidate_replies[:]:
