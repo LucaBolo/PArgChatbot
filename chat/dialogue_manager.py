@@ -1,8 +1,8 @@
 from flask import Blueprint
 from flask import request
 
-from .argumentation import ArgumentationManager
-from .db.queries import get_sentences, get_argument_from_question
+from chat.argumentation import ArgumentationManager
+from chat.db.queries import get_sentences, get_argument_from_question
 
 dialogue_blueprint = Blueprint('dialogue_manager', __name__)
 arg_manager = ArgumentationManager()
@@ -41,9 +41,7 @@ def chat():
             usr_msg = usr_msg[0]
         else:
             return {"data": "I didn't understand your answer, could you repeat?"}
-    elif usr_intent == 'why':
-        # send explanation to user
-        pass
+    
     
     reply = arg_manager.choose_reply(usr_msg)
     

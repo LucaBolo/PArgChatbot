@@ -1,8 +1,8 @@
 from neo4j.graph import Node
 from enum import Enum
 
-from .db.covidVaccine import CovidVaccineGraph
-from .db.queries import (get_arguments_endorsing_reply, 
+from chat.db.covidVaccine import CovidVaccineGraph
+from chat.db.queries import (get_arguments_endorsing_reply, 
                         get_arguments_attacking_reply, 
                         get_arguments_attacked_by_argument, 
                         get_arguments_attacking_argument,
@@ -172,7 +172,8 @@ class ArgumentationManager:
                 self.candidate_replies.remove(candidate_reply)
 
                 expl = self.build_explanation(candidate_reply)
-
+                print("consistent reply initial check")
+                print(expl)
                 return candidate_reply.get("sentence")[0] + expl + "\n==END==\n"
 
         for candidate_reply in self.candidate_replies[:]:
@@ -193,7 +194,6 @@ class ArgumentationManager:
                     # if there isn't even a single counter attack 
                     # in the history we must elicit info
                     return counterattack_args[0].get("question") 
-            # if we reach here, must mean the reply has been made consistent
-            return candidate_reply.get("sentence")[0]
+            
 
         return "No consistent answer has been found"
