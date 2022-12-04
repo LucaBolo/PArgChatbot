@@ -20,7 +20,7 @@ class DialogueActClassifier:
         df = pd.read_csv(self.data_path)
 
         df = df.rename(columns={'Category_1': 'dialogue_act'})
-        df = df[df['dialogue_act'].isin(['y', 'y-d', 'n', 'n-d'])]
+        df = df[df['dialogue_act'].isin(['y', 'y-d', 'n', 'n-d', 'dno'])]
         labels = df['dialogue_act']
         train = df.drop(['dialogue_act', 'Q/A'], axis=1)
 
@@ -67,6 +67,6 @@ class DialogueActClassifier:
         elif pred in ['n', 'n-d']:
             return 'no'
         else:
-            return 'why'
+            return pred
 
 
