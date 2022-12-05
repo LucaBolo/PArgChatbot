@@ -1,10 +1,10 @@
 from tkinter import *
 from tkinter import ttk
-import queue
+import queue, os, sys
 
-import sys
 
 from controller import Controller
+from language.svm import DialogueActClassifier
 
 class MainWindow:
 
@@ -82,9 +82,11 @@ class MainWindow:
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == "train":
-        from language.svm import DialogueActClassifier
+        
 
-        classifier = DialogueActClassifier("./language/diag_act_dataset.csv", "./language/svc.joblib")
+        dir_path = os.path.dirname(os.path.join(os.getcwd(), __file__))
+        
+        classifier = DialogueActClassifier(os.path.join(dir_path, "language\diag_act_dataset.csv"), os.path.join(dir_path, "language\svc.joblib"))
 
         train_texts, test_texts, train_labels, test_labels = classifier.prepare_data()
 
