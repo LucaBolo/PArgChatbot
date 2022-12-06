@@ -3,8 +3,17 @@ from scipy.spatial.distance import braycurtis
 import numpy as np
 import json, os
 
-def get_embeddings(sentences: 'list[str]', embedding_file = None):
-    model = SentenceTransformer("paraphrase-mpnet-base-v2")
+def get_thresholds():
+    return {
+        # thresholds that give best f1 score according to threshold tuning
+        # in A privacy-preserving dialogue system based on argumentation paper
+            "paraphrase-mpnet-base-v2": 0.68,
+            "stsb-mpnet-base-v2": 0.60,
+            "paraphrase-multilingual-mpnet-base-v2": 0.65
+        }
+
+def get_embeddings(sentences: 'list[str]', model_name="paraphrase-mpnet-base-v2", embedding_file = None):
+    model = SentenceTransformer(model_name)
 
     if embedding_file and not os.path.exists(embedding_file):
 
@@ -29,18 +38,18 @@ def get_embeddings(sentences: 'list[str]', embedding_file = None):
 
 
 def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
-    '''Finds the closest sentence embedding to the user 
-    message in terms of Bray-Curtis similarity'''
+    '''Finds the closest sentence embeddings to the user 
+    message in terms of Bray-Curtis distance and a tuned threshold'''
     
     current_module_path = os.path.dirname(os.path.realpath(__file__))
-    kb_embeddings = get_embeddings(kb, os.path.join(current_module_path, 'kb_embs.json'))
+    kb_embeddings = get_embeddings(kb, embedding_file=os.path.join(current_module_path, 'kb_embs.json'))
     user_embedding = get_embeddings(user_msg)
     
-    
-    distances = [braycurtis(user_embedding, kb_embedding) for kb_embedding in kb_embeddings]
-    
-    index = np.argmin(distances)
-
-    return kb[index], distances[index]
+    threshold = get_thresholds()["paraphrase-mpnet-base-v2"]
+    # keep only the sentences above the threshold in similarity
+    s_distances = [ (kb[i], 1 - braycurtis(user_embedding, kb_embedding)) for i, kb_embedding in enumerate(kb_embeddings)]
+    print(s_distances)
+    s_distances = list(filter(lambda s_distance : s_distance[1] >= threshold, s_distances))
+    return list(map(lambda s_distance : s_distance[0] , s_distances))
     
 

@@ -19,11 +19,11 @@ class Controller:
         msg = self.gui.get_delete_user_input()
         self.gui.write_chat_area("end", msg)
 
-        t = threading.Thread(target=self.get_bot_reply, args=(msg,))
+        t = threading.Thread(target=self.post_closest_embeddings, args=(msg,))
         t.start()
 
 
-    def get_bot_reply(self, msg: str):
+    def post_closest_embeddings(self, msg: str):
         
         if os.path.exists('./language/kb_embs.json'):
             with open('./language/kb_embs.json') as f:
@@ -31,17 +31,17 @@ class Controller:
         else:
             res = requests.get("http://127.0.0.1:5000/sentences")
             kb = res.json()["data"]
-        sentence, distance = get_most_similar_sentence(msg, kb)
-        
+        sentences = get_most_similar_sentence(msg, kb)
+        print(sentences)
         intent = 'other'
-        if distance > 0.4: # threshold for now arbitrary
+        if len(sentences) == 0: 
             # user message isn't close enough to sentences in kb
             # so the sentence we send to server is the last response
             # and we classify the intent of the user
             intent = self.dialog_classifier.predict(msg)
-            sentence = self.last_bot_response 
+            sentences = [self.last_bot_response] 
             
-        res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentence, "usr_intent": intent})
+        res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
         self.last_bot_response = res.json()["data"]
         self.queue.put(self.last_bot_response)
 
