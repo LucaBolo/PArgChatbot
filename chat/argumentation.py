@@ -186,8 +186,7 @@ class ArgumentationManager:
             for attack_arg in attack_args:
 
                 counterattack_args = get_arguments_attacking_argument(self.graph.driver, attack_arg)
-                # if with a user saying no we cannot ask the same question again
-                # we have to skip. But careful any([]) is False
+
                 if not any([counterattack_arg.get("id") in self.history_args_id for counterattack_arg in counterattack_args]):
                     # if there isn't even a single counter attack 
                     # in the history we must elicit info

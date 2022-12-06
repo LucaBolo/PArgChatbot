@@ -41,7 +41,12 @@ def chat():
             usr_msg = usr_msg[0]
         else:
             return {"data": "I didn't understand your answer, could you repeat?"}
-    
+    elif usr_intent == "dno":
+        # user is unsure. Behavior needs to be defined
+        # we could just see if there are any other endorsed
+        # and thus possibly consistent replies
+        # if there aren't, then the bot responds that it cannot give them a definitive answer 
+        pass
     
     reply = arg_manager.choose_reply(usr_msg)
     
