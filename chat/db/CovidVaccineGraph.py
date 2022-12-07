@@ -1,15 +1,40 @@
-
 import networkx as nx
+from enum import Enum
+import random
+
+class ArgLabels(Enum):
+    A1="a1"
+    A2="a2"
+    A3="a3"
+    A4="a4"
+    A5="a5"
+    A6="a6"
+    A7="a7"
+    A8="a8"
+    A9="a9"
+    A10="a10"
+    A11="a11"
+    A12="a12"
+    A13="a13"
+    A14="a14"
+    A15="a15"
+    A16="a16"
+
+class ReplyLabels(Enum):
+    R1="r1"
+    R2="r2"
+    R3="r3"
 
 class CovidVaccineGraph:
 
     def __init__(self) -> None:
         self.graph = nx.DiGraph()
+        
 
     def create_nodes(self):
         self.graph.add_nodes_from([
             (
-                "a1", {"class":"p", "question":"Are you celiac?", "sentences": ["I am celiac",
+                ArgLabels.A1.value, {"class":"p", "question":"Are you celiac?", "sentences": ["I am celiac",
                                                         "I suffer from the celiac disease",
                                                         "I am afflicted with the celiac disease",
                                                         "I have the celiac disease",
@@ -18,21 +43,21 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a2", {"class":"n", "question":"Are you celiac?", "sentences": ["I do not have the celiac disease",
+                ArgLabels.A2.value, {"class":"n", "question":"Are you celiac?", "sentences": ["I do not have the celiac disease",
                                                         "I am not celiac",
                                                         "I do not suffer from the celiac disease",
                                                         "I am not afflicted with the celiac disease"]
                 }
             ),
             (
-                "a3", {
+                ArgLabels.A3.value, {
                     "class":"n", "question":"Are you immunosuppressed?", "sentences": ["I am not immunosuppressed",
                                                         "I do not suffer from immunosuppression",
                                                         "I am not afflicted with immunosuppression"]
                 }
             ),
             (
-                "a4", {
+                ArgLabels.A4.value, {
                     "class":"p", "question":"Are you immunosuppressed?", "sentences": ["I am immunosuppressed",
                                                         "I suffer from immunosuppression",
                                                         "I am afflicted with immunosuppression",
@@ -42,7 +67,7 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a5", {
+                ArgLabels.A5.value, {
                     "class":"n", "question":"Do you have any drug allergy?", "sentences": ["I do not have any drug allergy",
                                                         "I do not suffer from drug allergies",
                                                         "I do not suffer from any drug allergy",
@@ -52,7 +77,7 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a6", {
+                ArgLabels.A6.value, {
                     "class":"p", "question":"Do you have any drug allergy?", "sentences": ["I have a drug allergy",
                                                         "I do have a drug allergy",
                                                         "I have a serious drug allergy",
@@ -62,7 +87,7 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a7", {
+                ArgLabels.A7.value, {
                     "class":"n", "question":"Do you have bronchial asthma?", "sentences": ["I do not suffer from bronchial asthma",
                                                         "I don't have bronchial asthma",
                                                         "I've never had bronchial asthma",
@@ -70,7 +95,7 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a8", {
+                ArgLabels.A8.value, {
                     "class":"p", "question":"Do you have bronchial asthma?", "sentences": ["I suffer from bronchial asthma",
                                                         "I have bronchial asthma",
                                                         "I am affected by bronchial asthma",
@@ -78,14 +103,14 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a9", {
+                ArgLabels.A9.value, {
                     "class":"p", "question":"Do you have diabetes?", "sentences": ["I suffer from diabetes",
                                                         "I am diabetic",
                                                         "I am affected by diabetes"]
                 }
             ),
             (
-                "a10", {
+                ArgLabels.A10.value, {
                     "class":"n", "question":"Do you have diabetes?", "sentences": ["I do not suffer from diabetes",
                                                         "I am not affected by diabetes",
                                                         "I am not diabetic",
@@ -93,7 +118,7 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a11", {
+                ArgLabels.A11.value, {
                     "class":"p", "question":"Are you allergic to latex?", "sentences": ["I suffer from latex allergy",
                                                         "I'm allergic to latex",
                                                         "I have a latex allergy",
@@ -101,7 +126,7 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a12", {
+                ArgLabels.A12.value, {
                     "class":"n", "question":"Are you allergic to latex?", "sentences": ["I do not suffer from latex allergy",
                                                         "I'm not allergic to latex",
                                                         "I do not have a latex allergy",
@@ -110,7 +135,7 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a13", {
+                ArgLabels.A13.value, {
                     "class":"n", "question":"Do you suffer from mastocytosis?", "sentences": ["I do not suffer from mastocytosis",
                                                         "I am not afflicted with mastocystosis",
                                                         "I do not have mastocystosis",
@@ -118,14 +143,14 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a14", {
+                ArgLabels.A14.value, {
                     "class":"p", "question":"Do you suffer from mastocytosis?", "sentences": ["I suffer from mastocytosis",
                                                         "I am afflicted with mastocystosis",
                                                         "I have a condition called mastocystosis"]
                 }
             ),
             (
-                "a15", {
+                ArgLabels.A15.value, {
                     "class":"p", "question":"Have you had anaphylactic reactions?", "sentences": ["I have experienced a serious anaphylaxis in the past",
                                                         "I have had an anaphylactic reaction in the past",
                                                         "I have already had an anaphylactic reaction before",
@@ -133,25 +158,25 @@ class CovidVaccineGraph:
                 }
             ),
             (
-                "a16", {
+                ArgLabels.A16.value, {
                     "class":"n", "question":"Have you had anaphylactic reactions?", "sentences": ["I've never experienced a serious anaphylaxis",
                                                         "I've never had a serious anaphylactic reaction",
                                                         "I've never gone into anaphylactic shock before"]
                 }
             ),
             (
-                "r1", {
-                    "sentence": ["Get vaccinated at any vaccine site. No special monitoring"]
+                ReplyLabels.R1.value, {
+                    "sentences": ["Get vaccinated at any vaccine site. No special monitoring"]
                 }
             ),
             (
-                "r2", {
-                    "sentence": ["Get vaccinated at any vaccine site. Monitoring for 60 minutes"]
+                ReplyLabels.R2.value, {
+                    "sentences": ["Get vaccinated at any vaccine site. Monitoring for 60 minutes"]
                 }
             ),
             (
-                "r3", {
-                    "sentence": ["Get vaccinated at the hospital"]
+                ReplyLabels.R3.value, {
+                    "sentences": ["Get vaccinated at the hospital"]
                 }
             )
 
@@ -170,78 +195,174 @@ class CovidVaccineGraph:
         
         self.graph.add_edges_from([
             (
-                "a1", "r1", {"type":"endorse"}
+                ArgLabels.A1.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a2", "r1", {"type":"endorse"}
+                ArgLabels.A2.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a3", "r1", {"type":"endorse"}
+                ArgLabels.A3.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a4", "r1", {"type":"endorse"}
+                ArgLabels.A4.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a5", "r1", {"type":"endorse"}
+                ArgLabels.A5.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a7", "r1", {"type":"endorse"}
+                ArgLabels.A7.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a9", "r1", {"type":"endorse"}
+                ArgLabels.A9.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a10", "r1", {"type":"endorse"}
+                ArgLabels.A10.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a12", "r1", {"type":"endorse"}
+                ArgLabels.A12.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a13", "r1", {"type":"endorse"}
+                ArgLabels.A13.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a16", "r1", {"type":"endorse"}
+                ArgLabels.A16.value, ReplyLabels.R1.value, {"type":"endorse"}
             ),
             (
-                "a6", "r1", {"type":"attack"}
+                ArgLabels.A6.value, ReplyLabels.R1.value, {"type":"attack"}
             ),
             (
-                "a8", "r1", {"type":"attack"}
+                ArgLabels.A8.value, ReplyLabels.R1.value, {"type":"attack"}
             ),
             (
-                "a11", "r1", {"type":"attack"}
+                ArgLabels.A11.value, ReplyLabels.R1.value, {"type":"attack"}
             ),
             (
-                "a14", "r1", {"type":"attack"}
+                ArgLabels.A14.value, ReplyLabels.R1.value, {"type":"attack"}
             ),
             (
-                "a15", "r1", {"type":"attack"}
+                ArgLabels.A15.value, ReplyLabels.R1.value, {"type":"attack"}
             ),
             (
-                "a6", "r2", {"type":"endorse"}
+                ArgLabels.A6.value, ReplyLabels.R2.value, {"type":"endorse"}
             ),
             (
-                "a11", "r2", {"type":"endorse"}
+                ArgLabels.A11.value, ReplyLabels.R2.value, {"type":"endorse"}
             ),
             (
-                "a14", "r2", {"type":"endorse"}
+                ArgLabels.A14.value, ReplyLabels.R2.value, {"type":"endorse"}
             ),
             (
-                "a8", "r2", {"type":"attack"}
+                ArgLabels.A8.value, ReplyLabels.R2.value, {"type":"attack"}
             ),
             (
-                "a15", "r2", {"type":"attack"}
+                ArgLabels.A15.value, ReplyLabels.R2.value, {"type":"attack"}
             ),
             (
-                "a8", "r3", {"type":"endorse"}
+                ArgLabels.A8.value, ReplyLabels.R3.value, {"type":"endorse"}
             ),
             (
-                "a15", "r3", {"type":"endorse"}
+                ArgLabels.A15.value, ReplyLabels.R3.value, {"type":"endorse"}
             ),
         ])
         
         return self.graph.number_of_edges()    
 
+
+    def get_arg_nodes_labels(self):
+
+        return set(n.value for n in ArgLabels)
+
+    def get_reply_nodes_labels(self):
+        return set(n.value for n in ReplyLabels)
+
+    # def get_attack_edges(self):
+    #    return set(filter(lambda edge : self.graph.edges[edge[0], edge[1]]["type"] == "attack", self.graph.edges))
+
+    # def get_endorse_edges(self):
+    #    return set(filter(lambda edge : self.graph.edges[edge[0], edge[1]]["type"] == "endorse", self.graph.edges))
+
+    def get_arg_sentences(self):
+        arg_nodes = self.get_arg_nodes_labels()
+        
+        arg_sentences = []
+        for arg_node in arg_nodes:
+
+            arg_sentences.extend(self.graph.nodes[arg_node]["sentences"])
+        
+        return arg_sentences
+
+    def get_arg_sentence(self, arg: str):
+        arg_sentences = self.graph.nodes[arg]["sentences"]
+        return arg_sentences[random.randint(0, len(arg_sentences))]
+
+    def get_arg_question(self, arg: str):
+        return self.graph.nodes[arg]["question"]
+
+    def get_reply_sentences(self):
+        reply_nodes = self.get_reply_nodes_labels()
+        
+        reply_sentences = []
+        for reply_node in reply_nodes:
+
+            reply_sentences.extend(self.graph.nodes[reply_node]["sentences"])
+        
+        return reply_sentences
+
+    def get_arguments_attacking_reply(self, reply: str):
+        '''Get the arguments that attack 
+        the given reply node (label)'''
+
+        preds = self.graph.predecessors(reply)
+
+        return set(filter(lambda pred : self.graph.edges[pred, reply]["type"] == "attack", preds))
+
+    
+    def get_arguments_endorsing_reply(self, reply: str):
+        '''Get the arguments that endorse 
+        the given reply node (label)'''
+
+        prevs = self.graph.predecessors(reply)
+
+        return set(filter(lambda prev : self.graph.edges[prev, reply]["type"] == "endorse", prevs))
+
+    def get_arguments_attacked_by_argument(self, arg: str):
+        '''Get the arguments attacked 
+        by the given argument node (label)'''
+
+        nexts = self.graph.successors(arg)
+
+        return set(filter(lambda next : self.graph.edges[arg, next]["type"] == "attack", nexts))
+
+    def get_arguments_attacking_argument(self, arg: str):
+        '''Get the arguments that attack 
+        the given argument node (label)'''
+
+        prevs = self.graph.predecessors(arg)
+
+        return set(filter(lambda prev : self.graph.edges[prev, arg]["type"] == "attack", prevs))
+
+    def get_replies_endorsed_by_argument(self, arg: str):
+        '''Get the arguments endorsed 
+        by the given argument node (label)'''
+
+        nexts = self.graph.successors(arg)
+
+        return set(filter(lambda next : self.graph.edges[arg, next]["type"] == "endorse", nexts))
+    
+    def get_node_containing_sentence(self, sentence: str):
+        
+        for node, prop in self.graph.nodes.data():
+            if sentence in prop["sentences"]:
+                return node
+        return None
+
+    def get_argument_from_question(self, question: str, _class: str):
+
+        arg_nodes = self.get_arg_nodes_labels()
+        for arg_node in arg_nodes:
+            if question == self.graph.nodes[arg_node]["question"] and _class == self.graph.nodes[arg_node]["class"]:
+                return arg_node
+        return None
 
 
 if __name__=='__main__':
@@ -251,5 +372,4 @@ if __name__=='__main__':
     print(g.create_nodes())
     print(g.create_edges())
 
-    for u,v, d in g.graph.edges.data(nbunch=[f"a{i}" for i in range(1,17)]):
-        print(u,v,d)
+    print(g.get_argument_from_question("Do you have any drug allergy?", "n"))

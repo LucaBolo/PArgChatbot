@@ -2,7 +2,6 @@ from flask import Blueprint
 from flask import request
 
 from chat.argumentation import ArgumentationManager
-from chat.db.queries import get_sentences, get_argument_from_question
 
 dialogue_blueprint = Blueprint('dialogue_manager', __name__)
 arg_manager = ArgumentationManager()
@@ -15,7 +14,7 @@ def start_conversation():
 
 @dialogue_blueprint.route("/sentences", methods=("GET",))
 def get_kb_sentences():
-    return {"data": [sentence for sentences in get_sentences(arg_manager.graph.driver) for sentence in sentences]}
+    return {"data": [sentence for sentences in arg_manager.arg_graph.get_arg_sentences() for sentence in sentences]}
 
 @dialogue_blueprint.route("/chat", methods=("GET",))
 def chat():
@@ -25,7 +24,7 @@ def chat():
     if usr_intent == 'yes':
         # user responded affirmatively to question
         # we look for a sentence in the node containing the question with positive class
-        usr_msg = get_argument_from_question(arg_manager.graph.driver, usr_msg[0], 'p')
+        usr_msg = arg_manager.arg_graph.get_argument_from_question(usr_msg[0], 'p')
         if len(usr_msg):
             usr_msg = usr_msg[0]
         else:
@@ -35,7 +34,7 @@ def chat():
         # user responded negatively to question
         # we look for a sentence in the node containing the question with negative class
 
-        usr_msg = get_argument_from_question(arg_manager.graph.driver, usr_msg[0], 'n')
+        usr_msg = arg_manager.arg_graph.get_argument_from_question(usr_msg[0], 'n')
 
         if len(usr_msg):
             usr_msg = usr_msg[0]
