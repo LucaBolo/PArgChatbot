@@ -21,11 +21,11 @@ def get_kb_sentences():
 def chat():
     
     usr_intent = request.args["usr_intent"]
-    usr_msg =  request.args["usr_msg"]
+    usr_msg =  request.args.getlist("usr_msg")
     if usr_intent == 'yes':
         # user responded affirmatively to question
         # we look for a sentence in the node containing the question with positive class
-        usr_msg = get_argument_from_question(arg_manager.graph.driver, usr_msg, 'p')
+        usr_msg = get_argument_from_question(arg_manager.graph.driver, usr_msg[0], 'p')
         if len(usr_msg):
             usr_msg = usr_msg[0]
         else:
@@ -35,7 +35,7 @@ def chat():
         # user responded negatively to question
         # we look for a sentence in the node containing the question with negative class
 
-        usr_msg = get_argument_from_question(arg_manager.graph.driver, usr_msg, 'n')
+        usr_msg = get_argument_from_question(arg_manager.graph.driver, usr_msg[0], 'n')
 
         if len(usr_msg):
             usr_msg = usr_msg[0]

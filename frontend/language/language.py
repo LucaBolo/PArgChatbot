@@ -7,7 +7,7 @@ def get_thresholds():
     return {
         # thresholds that give best f1 score according to threshold tuning
         # in A privacy-preserving dialogue system based on argumentation paper
-            "paraphrase-mpnet-base-v2": 0.68,
+            "paraphrase-mpnet-base-v2": 0.70,
             "stsb-mpnet-base-v2": 0.60,
             "paraphrase-multilingual-mpnet-base-v2": 0.65
         }
@@ -48,8 +48,8 @@ def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
     threshold = get_thresholds()["paraphrase-mpnet-base-v2"]
     # keep only the sentences above the threshold in similarity
     s_distances = [ (kb[i], 1 - braycurtis(user_embedding, kb_embedding)) for i, kb_embedding in enumerate(kb_embeddings)]
-    print(s_distances)
     s_distances = list(filter(lambda s_distance : s_distance[1] >= threshold, s_distances))
+    
     return list(map(lambda s_distance : s_distance[0] , s_distances))
     
 

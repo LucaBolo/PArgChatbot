@@ -1,5 +1,6 @@
 from neo4j import Neo4jDriver
 from neo4j.graph import Node
+import time
 
 def get_arguments_attacking_reply(driver: Neo4jDriver, reply: Node):
     '''Returns the attacking arguments to this reply, flattened'''
@@ -91,11 +92,11 @@ def get_node_containing_sentence(driver: Neo4jDriver, sentence: str):
     It assumes only a single node contains the specific sentence'''
     with driver.session() as session:
 
-        
+        startime = time.time()
         node = session.run("""MATCH (n)
                                 WHERE $sentence in n.sentences
                                 RETURN n""", sentence=sentence)
-
+        print(time.time() - startime)
         return node.value()[0]
 
 def get_replies(driver: Neo4jDriver):

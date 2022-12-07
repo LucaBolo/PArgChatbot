@@ -32,15 +32,16 @@ class Controller:
             res = requests.get("http://127.0.0.1:5000/sentences")
             kb = res.json()["data"]
         sentences = get_most_similar_sentence(msg, kb)
-        print(sentences)
+
         intent = 'other'
         if len(sentences) == 0: 
+            print('svm')
             # user message isn't close enough to sentences in kb
             # so the sentence we send to server is the last response
             # and we classify the intent of the user
             intent = self.dialog_classifier.predict(msg)
             sentences = [self.last_bot_response] 
-            
+        print(sentences)
         res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
         self.last_bot_response = res.json()["data"]
         self.queue.put(self.last_bot_response)

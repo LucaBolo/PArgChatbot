@@ -1,5 +1,5 @@
 from neo4j.graph import Node
-from enum import Enum
+import time
 
 from chat.db.covidVaccine import CovidVaccineGraph
 from chat.db.queries import (get_arguments_endorsing_reply, 
@@ -27,7 +27,7 @@ class ArgumentationManager:
         self.history_args = [] # history of argument nodes communicated by user
         self.history_replies = [] # history of reply nodes given to user
         self.history_args_id = set()
-        self.candidate_replies = []
+        self.potentially_cons_replies = []
 
     def explain_why_reply(self, reply: Node):
         '''Retrieves the argument nodes, among those in the history
@@ -125,58 +125,72 @@ class ArgumentationManager:
 
         return True
 
+    def add_argument(self, arg_node):
+        '''Adds node to history if it is not already present'''
+        
+        if arg_node.get("id") not in self.history_args_id:
 
-    def add_candidate_replies(self, replies: 'list[Node]'):
-        '''Adds replies to the candidate replies if 
+            self.history_args.append(arg_node)
+            self.history_args_id.add(arg_node.get("id"))
+
+    def add_potentially_cons_replies(self, replies: 'list[Node]'):
+        '''Adds replies to the potentially_cons replies if 
            1) they are not already present, avoiding duplicates
            2) they are not attacked by arguments in the history'''
         
 
-        candidate_reply_ids = [reply.get('id') for reply in self.candidate_replies]
+        potentially_cons_reply_ids = [reply.get('id') for reply in self.potentially_cons_replies]
 
         for reply in replies:
-            if len(self.explain_why_not_reply(reply)) == 0 and reply.get("id") not in candidate_reply_ids:
-                self.candidate_replies.append(reply) 
+            if len(self.explain_why_not_reply(reply)) == 0 and reply.get("id") not in potentially_cons_reply_ids:
+                self.potentially_cons_replies.append(reply) 
 
-    def choose_reply(self, user_msg: str):
-        '''Takes the user message (or rather, the sentence in the KB 
+    def choose_reply(self, user_msg: 'list[str]'):
+        '''Takes the user message (or rather, the sentences in the KB 
         most similar to the user message), and returns a consistent reply or,
         if absent, information the system needs to turn a potentially consistent
         reply into a consistent one.'''
         # if user message is not an explanation request
         # add it to the arguments in the chat
-
-        arg_node = get_node_containing_sentence(self.graph.driver, user_msg)
-        if self.is_conflict_free(arg_node):
-            self.history_args.append(arg_node)
-            self.history_args_id.add(arg_node.get("id"))
-        else:
-            return "This user message contradicts previous statements"
-
-        # retrieve the replies endorsed by the user message. If no messages are returned
-        replies = get_replies_endorsed_by_argument(self.graph.driver, arg_node)
-
-        if len(replies) == 0 and len(self.candidate_replies) == 0:
-            return 'No consistent answer has been found'
         
-        # filter past candidate replies that are no longer compatible with newly added argument
+        startime = time.time()
+        for sentence in user_msg:
+            
+            arg_node = get_node_containing_sentence(self.graph.driver, sentence)
+            if self.is_conflict_free(arg_node):
+                self.add_argument(arg_node)
+
+            else:
+                return "Your message contradicts previous statements"
+        print(time.time() - startime)
+        # filter past potentially consistent replies that are no longer compatible with newly added arguments
         # explain why not retrieves argument in the history attacking the given reply
-        self.candidate_replies = list(filter(lambda candidate_reply : len(self.explain_why_not_reply(candidate_reply)) == 0, self.candidate_replies))
-        self.add_candidate_replies(replies)    
+        self.potentially_cons_replies = list(filter(lambda potentially_cons_reply : len(self.explain_why_not_reply(potentially_cons_reply)) == 0, self.potentially_cons_replies))
+
+        # retrieve the replies endorsed by the nodes activated by user's message.
+        # add them to potentially consistent replies if not duplicates
+        for node in self.history_args:
+            replies = get_replies_endorsed_by_argument(self.graph.driver, node)
+            self.add_potentially_cons_replies(replies)
+
+        
+        if len(replies) == 0 and len(self.potentially_cons_replies) == 0:
+            return 'No consistent answer has been found'    
+            
         # if there is even a single consistent reply we return it to the user
-        for candidate_reply in self.candidate_replies[:]:
-            if self.is_consistent_reply(candidate_reply):
-                # append it to history of replies and remove it from candidates
+        for potentially_cons_reply in self.potentially_cons_replies[:]:
+            if self.is_consistent_reply(potentially_cons_reply):
+                # append it to history of replies and remove it from potentially_conss
                 
-                self.history_replies.append(candidate_reply)
-                self.candidate_replies.remove(candidate_reply)
+                self.history_replies.append(potentially_cons_reply)
+                self.potentially_cons_replies.remove(potentially_cons_reply)
 
-                expl = self.build_explanation(candidate_reply)
-                return candidate_reply.get("sentence")[0] + expl + "\n==END==\n"
+                expl = self.build_explanation(potentially_cons_reply)
+                return potentially_cons_reply.get("sentence")[0] + expl + "\n==END==\n"
 
-        for candidate_reply in self.candidate_replies[:]:
+        for potentially_cons_reply in self.potentially_cons_replies[:]:
             # potentially consistent
-            attack_args = get_arguments_attacking_reply(self.graph.driver, candidate_reply)
+            attack_args = get_arguments_attacking_reply(self.graph.driver, potentially_cons_reply)
 
             # elicit data from user about possible counterattacks
             # this method is called for each message
