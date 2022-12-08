@@ -14,7 +14,7 @@ def start_conversation():
 
 @dialogue_blueprint.route("/sentences", methods=("GET",))
 def get_kb_sentences():
-    return {"data": [sentence for sentences in arg_manager.arg_graph.get_arg_sentences() for sentence in sentences]}
+    return {"data": [sentence for sentence in arg_manager.arg_graph.get_arg_sentences()]}
 
 @dialogue_blueprint.route("/chat", methods=("GET",))
 def chat():
@@ -24,22 +24,24 @@ def chat():
     if usr_intent == 'yes':
         # user responded affirmatively to question
         # we look for a sentence in the node containing the question with positive class
-        usr_msg = arg_manager.arg_graph.get_argument_from_question(usr_msg[0], 'p')
-        if len(usr_msg):
-            usr_msg = usr_msg[0]
-        else:
+        usr_msg = arg_manager.arg_graph.get_sentence_corresponding_question(usr_msg[0], 'p')
+        
+        if usr_msg is None:
             return {"data": "I didn't understand your answer, could you repeat?"}
+        usr_msg = [usr_msg]
+        
     elif usr_intent == 'no':
 
         # user responded negatively to question
         # we look for a sentence in the node containing the question with negative class
 
-        usr_msg = arg_manager.arg_graph.get_argument_from_question(usr_msg[0], 'n')
+        usr_msg = arg_manager.arg_graph.get_sentence_corresponding_question(usr_msg[0], 'n')
 
-        if len(usr_msg):
-            usr_msg = usr_msg[0]
-        else:
+        if usr_msg is None:
             return {"data": "I didn't understand your answer, could you repeat?"}
+
+        usr_msg = [usr_msg]
+
     elif usr_intent == "dno":
         # user is unsure. Behavior needs to be defined
         # we could just see if there are any other endorsed

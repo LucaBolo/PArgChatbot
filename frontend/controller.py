@@ -9,8 +9,13 @@ class Controller:
     def __init__(self, gui, queue) -> None:
         self.gui = gui
         self.queue = queue
-        self.dialog_classifier = DialogueActClassifier('./language/diag_act_dataset.csv', './language/svc.joblib')
+
         self.last_bot_response = None
+
+        current_module_path = os.path.dirname(os.path.realpath(__file__))
+        self.dialog_classifier = DialogueActClassifier(os.path.join(current_module_path, 'language/diag_act_dataset.csv'), 
+            os.path.join(current_module_path,'language/svc.joblib'))
+        
 
     
     def post_user_message(self, e):
@@ -40,8 +45,10 @@ class Controller:
             # so the sentence we send to server is the last response
             # and we classify the intent of the user
             intent = self.dialog_classifier.predict(msg)
+            print(intent)
             sentences = [self.last_bot_response] 
-        print(sentences)
+            print(sentences)
+        
         res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
         self.last_bot_response = res.json()["data"]
         self.queue.put(self.last_bot_response)

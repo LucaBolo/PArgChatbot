@@ -29,6 +29,8 @@ class CovidVaccineGraph:
 
     def __init__(self) -> None:
         self.graph = nx.DiGraph()
+        self.create_nodes()
+        self.create_edges()
         
 
     def create_nodes(self):
@@ -286,14 +288,14 @@ class CovidVaccineGraph:
         
         arg_sentences = []
         for arg_node in arg_nodes:
-
+            
             arg_sentences.extend(self.graph.nodes[arg_node]["sentences"])
         
         return arg_sentences
 
     def get_arg_sentence(self, arg: str):
         arg_sentences = self.graph.nodes[arg]["sentences"]
-        return arg_sentences[random.randint(0, len(arg_sentences))]
+        return arg_sentences[random.randint(0, len(arg_sentences) - 1)]
 
     def get_arg_question(self, arg: str):
         return self.graph.nodes[arg]["question"]
@@ -352,16 +354,17 @@ class CovidVaccineGraph:
     def get_node_containing_sentence(self, sentence: str):
         
         for node, prop in self.graph.nodes.data():
+            
             if sentence in prop["sentences"]:
                 return node
         return None
 
-    def get_argument_from_question(self, question: str, _class: str):
+    def get_sentence_corresponding_question(self, question: str, _class: str):
 
         arg_nodes = self.get_arg_nodes_labels()
         for arg_node in arg_nodes:
             if question == self.graph.nodes[arg_node]["question"] and _class == self.graph.nodes[arg_node]["class"]:
-                return arg_node
+                return self.get_arg_sentence(arg_node)
         return None
 
 

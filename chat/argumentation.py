@@ -43,7 +43,7 @@ class ArgumentationManager:
         
         # arguments in the status set of arguments already collected
         # for user that also attack the reply
-        attacking_status_arg = [node for node in attacking_args if node in self.history_args_id]
+        attacking_status_arg = [node for node in attacking_args if node in self.history_args]
 
         return attacking_status_arg
 
@@ -57,13 +57,15 @@ class ArgumentationManager:
         #print(supporting_args_sentences)
         template_args = {
             "I": "You",
-            "I am": "You are",
-            "I'm": "You are",
-            "me": "you"
+            "am": "are",
+            "'m": " are",
+            " me ": " you "
         }
 
         def replace_template(sentence):
+            print(sentence)
             for k, v in template_args.items():
+                print(k, v)
                 sentence = sentence.replace(k,v)
             return sentence
 
@@ -75,9 +77,8 @@ class ArgumentationManager:
             
             explanation += f"You can't {self.arg_graph.get_arg_sentence(discarded_reply).lower().replace('.', ' with ')} because \n"
             whynots = self.explain_why_not_reply(discarded_reply)
-            #print(whynots)
+
             for whynot in whynots:
-                #print(whynot.get("sentences")[0])
                 
                 explanation += replace_template(self.arg_graph.get_arg_sentence(whynot)) + "\n"
 
@@ -93,7 +94,7 @@ class ArgumentationManager:
 
         # if there is no common node between history and the attacks 
         # to the given argument, then it is conflict free
-        return not (attacked & self.history_args)
+        return not (attacked & set(self.history_args))
 
     
     def is_consistent_reply(self, reply: str):
@@ -112,7 +113,7 @@ class ArgumentationManager:
 
             # if no counterattacking argument is found in the history
             # then it is not consistent
-            if not (counterattacking_args & self.history_args):
+            if not (counterattacking_args & set(self.history_args)):
                 return False
 
         return True
@@ -142,19 +143,20 @@ class ArgumentationManager:
         # if user message is not an explanation request
         # add it to the arguments in the chat
         
-        startime = time.time()
+
         for sentence in user_msg:
-            
+            print(sentence)
             arg_node = self.arg_graph.get_node_containing_sentence(sentence)
+            
             if self.is_conflict_free(arg_node):
                 self.add_argument(arg_node)
 
             else:
                 return "Your message contradicts previous statements"
-        print(time.time() - startime)
+        
         # filter past potentially consistent replies that are no longer compatible with newly added arguments
         # explain why not retrieves argument in the history attacking the given reply
-        self.potentially_cons_replies = list(filter(lambda potentially_cons_reply : len(self.explain_why_not_reply(potentially_cons_reply)) == 0, self.potentially_cons_replies))
+        self.potentially_cons_replies = set(filter(lambda potentially_cons_reply : len(self.explain_why_not_reply(potentially_cons_reply)) == 0, self.potentially_cons_replies))
 
         # retrieve the replies endorsed by the nodes activated by user's message.
         # add them to potentially consistent replies if not duplicates
@@ -167,7 +169,7 @@ class ArgumentationManager:
             return 'No consistent answer has been found'    
             
         # if there is even a single consistent reply we return it to the user
-        for potentially_cons_reply in self.potentially_cons_replies[:]:
+        for potentially_cons_reply in self.potentially_cons_replies.copy():
             if self.is_consistent_reply(potentially_cons_reply):
                 # append it to history of replies and remove it from potentially_conss
                 
@@ -177,7 +179,7 @@ class ArgumentationManager:
                 expl = self.build_explanation(potentially_cons_reply)
                 return self.arg_graph.get_arg_sentence(potentially_cons_reply) + expl + "\n==END==\n"
 
-        for potentially_cons_reply in self.potentially_cons_replies[:]:
+        for potentially_cons_reply in self.potentially_cons_replies.copy():
             # potentially consistent
             attack_args = self.arg_graph.get_arguments_attacking_reply(potentially_cons_reply)
 
@@ -193,7 +195,7 @@ class ArgumentationManager:
                 if not any([counterattack_arg in self.history_args for counterattack_arg in counterattack_args]):
                     # if there isn't even a single counter attack 
                     # in the history we must elicit info
-                    return self.arg_graph.get_arg_question(counterattack_args)
+                    return self.arg_graph.get_arg_question(counterattack_args.pop())
             
 
         return "No consistent answer has been found"
