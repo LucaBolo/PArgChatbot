@@ -20,7 +20,7 @@ class DialogueActClassifier:
         df = pd.read_csv(self.data_path)
 
         df = df.rename(columns={'Category_1': 'dialogue_act'})
-        df = df[df['dialogue_act'].isin(['y', 'y-d', 'n', 'n-d', 'dno'])]
+        df = df[df['dialogue_act'].isin(['y',  'n',  'dno'])]
         labels = df['dialogue_act']
         train = df.drop(['dialogue_act', 'Q/A'], axis=1)
 
@@ -39,7 +39,7 @@ class DialogueActClassifier:
             grid_classifier = GridSearchCV(model, parameters, cv=folds, scoring=scoring) # micro bc class imbalance
             
             current_module_path = os.path.dirname(os.path.realpath(__file__))
-            _, train_embeddings = get_embeddings(train_texts, os.path.join(current_module_path, 'train_embs.json'))
+            _, train_embeddings = get_embeddings(train_texts, embedding_file=os.path.join(current_module_path, 'train_embs.json'))
 
             grid_classifier.fit(train_embeddings, train_labels)
 
