@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.svm import SVC
 from joblib import dump, load
@@ -31,7 +32,7 @@ class DialogueActClassifier:
     def train(self, train_texts, train_labels, folds=5, scoring='f1_micro'):
         
         if not os.path.exists(self.model_path):
-            model = SVC(random_state=42, class_weight='balanced')
+            model = SVC(random_state=42, class_weight='balanced', probability=True)
             parameters = {'C': [0.1, 0.5, 1, 1.5, 2, 10],
                         'kernel': ['poly', 'rbf', 'linear', 'sigmoid'],
                         'gamma': ['scale', 'auto']}
@@ -44,6 +45,8 @@ class DialogueActClassifier:
             grid_classifier.fit(train_embeddings, train_labels)
 
             best_classifier = grid_classifier.best_estimator_
+
+           
             self.best_hyperparams = grid_classifier.best_params_
 
             dump(best_classifier, self.model_path)
@@ -60,8 +63,9 @@ class DialogueActClassifier:
 
         _, test_embeddings = get_embeddings(sentence)
         
-        pred = model.predict(test_embeddings.reshape(1,-1))
-
+        probabilities = model.predict_proba(test_embeddings.reshape(1,-1))
+        pred = model.classes_[np.argmax(probabilities[0])]
+        print(pred)
         if pred in ['y', 'y-d']:
             return 'yes'
         elif pred in ['n', 'n-d']:
