@@ -160,6 +160,7 @@ class ArgumentationManager:
 
         # retrieve the replies endorsed by the nodes activated by user's message.
         # add them to potentially consistent replies if not duplicates
+        replies = []
         for node in self.history_args:
             replies = self.arg_graph.get_replies_endorsed_by_argument(node)
             self.add_potentially_cons_replies(replies)
