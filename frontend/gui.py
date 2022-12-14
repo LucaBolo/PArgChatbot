@@ -5,6 +5,7 @@ import queue, os, sys
 
 from controller import Controller
 from language.svm.svm import DialogueActClassifier
+from language.multilingual.teacher_student import SentenceTranslationEmbedding
 
 class MainWindow:
 
@@ -81,7 +82,7 @@ class MainWindow:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] == "train":
+    if len(sys.argv) > 1 and sys.argv[1] == "svm":
         
 
         dir_path = os.path.dirname(os.path.join(os.getcwd(), __file__))
@@ -91,6 +92,22 @@ if __name__ == '__main__':
         train_texts, test_texts, train_labels, test_labels = classifier.prepare_data()
 
         model = classifier.train(train_texts, train_labels)
+    elif  len(sys.argv) > 1 and sys.argv[1] == "sbert":
+
+        
+
+        sentence_translation_embedding = SentenceTranslationEmbedding()
+        sentences_file, links_file = sentence_translation_embedding.download_tatoeba_dataset()
+        sts_file = sentence_translation_embedding.download_sts_dataset()
+
+        train_files, dev_files = sentence_translation_embedding.prepare_tatoeba_dataset(sentences_file, links_file)
+        sts_data = sentence_translation_embedding.prepare_sts_dataset(sts_file)
+
+        student, teacher = sentence_translation_embedding.prepare_teacher_student_model()
+
+        train_dataloader, train_loss = sentence_translation_embedding.load_train_dataset(student, teacher, train_files)
+        evaluators = sentence_translation_embedding.load_evaluators(student, teacher, dev_files, sts_data)
+        sentence_translation_embedding.fit(student, train_dataloader, train_loss, evaluators)
     else:
         main_window = MainWindow()
     

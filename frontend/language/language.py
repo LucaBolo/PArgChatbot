@@ -14,7 +14,7 @@ def get_thresholds():
         }
 
 def get_embeddings(sentences: 'list[str]', model_name="paraphrase-mpnet-base-v2", embedding_file = None):
-    model = SentenceTransformer(model_name)
+    model = SentenceTransformer(model_name, device='cuda')
     
     if embedding_file and not os.path.exists(embedding_file):
 
