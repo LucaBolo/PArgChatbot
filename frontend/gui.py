@@ -4,7 +4,7 @@ import queue, os, sys
 
 
 from controller import Controller
-from language.svm import DialogueActClassifier
+from language.svm.svm import DialogueActClassifier
 
 class MainWindow:
 
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
         dir_path = os.path.dirname(os.path.join(os.getcwd(), __file__))
         
-        classifier = DialogueActClassifier(os.path.join(dir_path, "language\diag_act_dataset.csv"), os.path.join(dir_path, "language\svc.joblib"))
+        classifier = DialogueActClassifier(os.path.join(dir_path, "language/svm/diag_act_dataset.csv"), os.path.join(dir_path, "language/svm/svc.joblib"))
 
         train_texts, test_texts, train_labels, test_labels = classifier.prepare_data()
 

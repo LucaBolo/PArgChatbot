@@ -1,7 +1,7 @@
 import os, json, threading, requests
 
 from language.language import get_most_similar_sentence
-from language.svm import DialogueActClassifier
+from language.svm.svm import DialogueActClassifier
 
 
 class Controller:
@@ -13,8 +13,8 @@ class Controller:
         self.last_bot_response = None
 
         current_module_path = os.path.dirname(os.path.realpath(__file__))
-        self.dialog_classifier = DialogueActClassifier(os.path.join(current_module_path, 'language/diag_act_dataset.csv'), 
-            os.path.join(current_module_path,'language/svc.joblib'))
+        self.dialog_classifier = DialogueActClassifier(os.path.join(current_module_path, 'language/svm/diag_act_dataset.csv'), 
+            os.path.join(current_module_path,'language/svm/svc.joblib'))
         
 
     
@@ -40,14 +40,13 @@ class Controller:
 
         intent = 'other'
         if len(sentences) == 0: 
-            print('svm')
             # user message isn't close enough to sentences in kb
             # so the sentence we send to server is the last response
             # and we classify the intent of the user
             intent = self.dialog_classifier.predict(msg)
-            print(intent)
+
             sentences = [self.last_bot_response] 
-            print(sentences)
+
         
         res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
         self.last_bot_response = res.json()["data"]
