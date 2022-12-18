@@ -13,7 +13,7 @@ class MainWindow:
         self.window = Tk()
         self.window.title("CovBot")
         self.mainframe = ttk.Frame(self.window, width=640, height=480)
-        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S), columnspan=3, rowspan=3)
+        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S), columnspan=3, rowspan=4)
         self.window.columnconfigure(0, weight=1)
         self.window.rowconfigure(0, weight=1) 
         
@@ -22,7 +22,7 @@ class MainWindow:
         self.chat_area.grid(column=1, row=1, padx=10, pady=20, columnspan=2)
 
         self.input_area = Text(self.mainframe, height=3, font="arial")
-        self.input_area.grid(column=1, row=2, padx=10, pady=10, columnspan=1)
+        self.input_area.grid(column=1, row=2, padx=10, pady=10, rowspan=2, columnspan=1)
 
         self.queue = queue.Queue()
         self.controller = Controller(self, self.queue)
@@ -33,9 +33,12 @@ class MainWindow:
         self.chat_area["state"] = "disabled"
         self.input_area["state"] = "disabled"        
         
-        self.button = ttk.Button(self.mainframe, text='Start!', command=self.controller.start_conversation)
-        self.button.grid(column=2, row=2, padx=10, pady=10, columnspan=1)
-
+        self.start_button = ttk.Button(self.mainframe, text='Start!', command=self.controller.start_conversation)
+        self.start_button.grid(column=2, row=2, padx=10, pady=5, columnspan=1)
+        self.stop_button = ttk.Button(self.mainframe, text='Stop!', command=self.controller.stop_conversation)
+        self.stop_button.grid(column=2, row=3, padx=10, pady=5, columnspan=1)
+        self.stop_button["state"] = "disabled"
+        
         self.input_area.bind('<Return>', self.controller.post_user_message)
         self.window.protocol("WM_DELETE_WINDOW", self.controller.on_close)
 
@@ -55,7 +58,7 @@ class MainWindow:
                 if "==END==" in msg: # end of conversation
                     self.chat_area["state"] = "disabled"
                     self.input_area["state"] = "disabled"
-                    self.button["state"] = "normal"
+                    self.stop_button["state"] = "normal"
                 
                 self.window.after(500, self.process_queue)
         except queue.Empty:

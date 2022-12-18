@@ -63,9 +63,9 @@ class ArgumentationManager:
         }
 
         def replace_template(sentence):
-            print(sentence)
+
             for k, v in template_args.items():
-                print(k, v)
+
                 sentence = sentence.replace(k,v)
             return sentence
 
@@ -145,7 +145,6 @@ class ArgumentationManager:
         
 
         for sentence in user_msg:
-            print(sentence)
             arg_node = self.arg_graph.get_node_containing_sentence(sentence)
             
             if self.is_conflict_free(arg_node):
@@ -178,7 +177,7 @@ class ArgumentationManager:
                 self.potentially_cons_replies.remove(potentially_cons_reply)
 
                 expl = self.build_explanation(potentially_cons_reply)
-                return self.arg_graph.get_arg_sentence(potentially_cons_reply) + expl + "\n==END==\n"
+                return self.arg_graph.get_arg_sentence(potentially_cons_reply) + expl + "\nDo you want to share anything else?\n"
 
         for potentially_cons_reply in self.potentially_cons_replies.copy():
             # potentially consistent

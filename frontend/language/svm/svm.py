@@ -65,7 +65,6 @@ class DialogueActClassifier:
         
         probabilities = model.predict_proba(test_embeddings.reshape(1,-1))
         pred = model.classes_[np.argmax(probabilities[0])]
-        print(pred)
         if pred in ['y', 'y-d']:
             return 'yes'
         elif pred in ['n', 'n-d']:

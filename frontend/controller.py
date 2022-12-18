@@ -75,11 +75,21 @@ class Controller:
 
             self.queue.put(greeting)
 
-        self.gui.button["state"] = "disabled"
+        self.gui.start_button["state"] = "disabled"
         self.gui.input_area["state"] = "normal"
+        self.gui.stop_button["state"] = "normal"
         t = threading.Thread(target=greeting)
         t.start()
         
+    def stop_conversation(self):
+        
+        def end():
+            requests.get("http://127.0.0.1:5000/close")
+            self.queue.put("==END==")
+
+        t = threading.Thread(target=end)
+        t.start()
+
         
         
 
