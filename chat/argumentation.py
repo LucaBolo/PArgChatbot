@@ -170,14 +170,17 @@ class ArgumentationManager:
             
         # if there is even a single consistent reply we return it to the user
         for potentially_cons_reply in self.potentially_cons_replies.copy():
-            if self.is_consistent_reply(potentially_cons_reply):
+            if self.is_consistent_reply(potentially_cons_reply) and potentially_cons_reply not in self.history_replies:
                 # append it to history of replies and remove it from potentially_conss
                 
                 self.history_replies.append(potentially_cons_reply)
                 self.potentially_cons_replies.remove(potentially_cons_reply)
 
                 expl = self.build_explanation(potentially_cons_reply)
-                return self.arg_graph.get_arg_sentence(potentially_cons_reply) + expl + "\nDo you want to share anything else?\n"
+                return self.arg_graph.get_arg_sentence(potentially_cons_reply) + expl + "\nIf you want, you may share new information. To stop this conversation, click on the button.\n"
+            elif self.is_consistent_reply(potentially_cons_reply) and potentially_cons_reply in self.history_replies:
+                # user is continuing conversation but new facts do not change or add a new consistent reply
+                return "\nThis new fact doesn't change my advice. Do you have anything else to share? Otherwise, click on the button to stop.\n"
 
         for potentially_cons_reply in self.potentially_cons_replies.copy():
             # potentially consistent
@@ -197,5 +200,6 @@ class ArgumentationManager:
                     # in the history we must elicit info
                     return self.arg_graph.get_arg_question(counterattack_args.pop())
             
-
-        return "No consistent answer has been found"
+        # reach this point if no counterattacks have been found
+        # but in practical arg graph shouldn't happen
+        return "\nNo consistent answer has been found. \nIf you want, you may share new information. To stop this conversation, click on the button.\n"
