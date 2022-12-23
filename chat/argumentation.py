@@ -49,9 +49,15 @@ class ArgumentationManager:
 
     def build_explanation(self, reply: str):
 
-        replies = self.arg_graph.get_reply_nodes_labels()
-        discarded_replies = list(filter(lambda r : reply != r, replies))
-        #print(self.explain_why_reply(reply))
+        
+        discarded_replies = []
+        for arg in self.history_args:
+            endorsed_replies = self.arg_graph.get_replies_endorsed_by_argument(arg)
+            for endorsed_reply in endorsed_replies:
+                if (reply != endorsed_reply):
+                    discarded_replies.append(endorsed_reply) 
+        
+        
         supporting_args_sentences = [self.arg_graph.get_arg_sentence(why) for why in self.explain_why_reply(reply)]
 
         #print(supporting_args_sentences)
