@@ -60,29 +60,3 @@ def get_most_similar_sentence(user_msg: str, kb: 'list[str]'):
     similar = list(filter(lambda s_distance : s_distance[1] >= threshold, similar))
     print(similar)
     return list(map(lambda s_distance : s_distance[0] , similar))
-    
-
-def get_intent(user_msg: str):
-    '''Finds the closest sentence in the dialogue act
-    sentences and returns the corresponding intet (yes, no, dno)'''
-
-    current_module_path = os.path.dirname(os.path.realpath(__file__))
-
-    with open(os.path.join(current_module_path, "dialogue_act.json")) as f:
-        dialogue_acts = json.load(f)
-
-
-    dialogue_acts_sentences = [s for _, dialogue_act in dialogue_acts.items() for s in dialogue_act]
-    sentences, sentences_embs = get_embeddings(dialogue_acts_sentences, embedding_file=os.path.join(current_module_path, "dialogue_act_embs.json"))
-    _, user_embedding = get_embeddings(user_msg)
-
-    closest_sentence = max([(sentences[i], 1 - braycurtis(sentence_emb, user_embedding)) for i, sentence_emb in enumerate(sentences_embs)], key=lambda x: x[1])
-    threshold = get_thresholds()["paraphrase-mpnet-base-v2"]
-    for k in dialogue_acts.keys():
-        print(closest_sentence)
-        if closest_sentence[0] in dialogue_acts[k] and closest_sentence[1] >= threshold:
-            
-            return k
-
-    
-    return None

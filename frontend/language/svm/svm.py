@@ -21,7 +21,7 @@ class DialogueActClassifier:
         df = pd.read_csv(self.data_path)
 
         df = df.rename(columns={'Category_1': 'dialogue_act'})
-        df = df[df['dialogue_act'].isin(['y',  'n',  'dno'])]
+        df = df[df['dialogue_act'].isin(['y',  'n'])]
         labels = df['dialogue_act']
         train = df.drop(['dialogue_act', 'Q/A'], axis=1)
 
@@ -64,12 +64,12 @@ class DialogueActClassifier:
         _, test_embeddings = get_embeddings(sentence)
         
         probabilities = model.predict_proba(test_embeddings.reshape(1,-1))
+        print(probabilities)
         pred = model.classes_[np.argmax(probabilities[0])]
+        print(pred)
         if pred in ['y', 'y-d']:
             return 'yes'
         elif pred in ['n', 'n-d']:
             return 'no'
-        else:
-            return pred
 
 
