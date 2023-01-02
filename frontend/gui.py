@@ -30,15 +30,15 @@ class MainWindow:
         for child in self.window.winfo_children(): 
             child.grid_configure(padx=20, pady=5)
 
-        self.chat_area["state"] = "disabled"
-        self.input_area["state"] = "disabled"        
         
         self.start_button = ttk.Button(self.mainframe, text='Start!', command=self.controller.start_conversation)
         self.start_button.grid(column=2, row=2, padx=10, pady=5, columnspan=1)
         self.stop_button = ttk.Button(self.mainframe, text='Stop!', command=self.controller.stop_conversation)
         self.stop_button.grid(column=2, row=3, padx=10, pady=5, columnspan=1)
-        self.stop_button["state"] = "disabled"
         
+        self.input_area["state"] = "disabled"
+        self.stop_button["state"] = "disabled"
+
         self.input_area.bind('<Return>', self.controller.post_user_message)
         self.window.protocol("WM_DELETE_WINDOW", self.controller.on_close)
 
@@ -55,10 +55,6 @@ class MainWindow:
                 self.window.destroy()
             else: 
                 self.write_chat_area("end", msg)
-                if "==END==" in msg: # end of conversation
-                    self.chat_area["state"] = "disabled"
-                    self.input_area["state"] = "disabled"
-                    self.stop_button["state"] = "normal"
                 
                 self.window.after(500, self.process_queue)
         except queue.Empty:
@@ -82,6 +78,21 @@ class MainWindow:
         #self.chat_area.insert("end", msg)
         self.chat_area.insert(index, msg+"\n")
         self.chat_area["state"] = "disabled"
+
+    def start_state(self):
+        '''Updates widgets' state after
+        start button click'''
+        self.start_button["state"] = "disabled"
+        self.input_area["state"] = "normal"
+        self.stop_button["state"] = "normal"
+
+    def stop_state(self):
+        '''Updates widgets' state after
+        stop button click'''
+        self.chat_area["state"] = "disabled"
+        self.input_area["state"] = "disabled"
+        self.stop_button["state"] = "disabled"
+        self.start_button["state"] = "normal"
 
 
 if __name__ == '__main__':

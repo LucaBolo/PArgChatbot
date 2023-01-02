@@ -45,7 +45,7 @@ class Controller:
             # and we classify the intent of the user
             intent = self.dialog_classifier.predict(msg)
 
-            sentences = [self.last_bot_response] 
+            sentences = [self.last_bot_response] if self.last_bot_response is not None else ''
 
         
         res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
@@ -59,7 +59,7 @@ class Controller:
 
             self.queue.put(res.json()["data"])
 
-
+        self.last_bot_response = None
         t = threading.Thread(target=clear_history)
         t.start()
 
@@ -75,9 +75,7 @@ class Controller:
 
             self.queue.put(greeting)
 
-        self.gui.start_button["state"] = "disabled"
-        self.gui.input_area["state"] = "normal"
-        self.gui.stop_button["state"] = "normal"
+        self.gui.start_state()        
         t = threading.Thread(target=greeting)
         t.start()
         
@@ -87,6 +85,7 @@ class Controller:
             requests.get("http://127.0.0.1:5000/close")
             self.queue.put("==END==")
 
+        self.gui.stop_state()
         t = threading.Thread(target=end)
         t.start()
 
