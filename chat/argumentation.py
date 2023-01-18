@@ -54,7 +54,7 @@ class ArgumentationManager:
         for arg in self.history_args:
             endorsed_replies = self.arg_graph.get_replies_endorsed_by_argument(arg)
             for endorsed_reply in endorsed_replies:
-                if (reply != endorsed_reply):
+                if (reply != endorsed_reply and endorsed_reply not in discarded_replies):
                     discarded_replies.append(endorsed_reply) 
         
         
