@@ -45,7 +45,7 @@ def chat():
     
     reply = arg_manager.choose_reply(usr_msg)
     
-    return {"data": reply}
+    return {"data": reply, "history_args": arg_manager.history_args, "history_replies": arg_manager.history_replies}
 
 
 @dialogue_blueprint.route("/close", methods=("GET",))

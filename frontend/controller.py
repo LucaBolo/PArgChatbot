@@ -6,9 +6,10 @@ from language.svm.svm import DialogueActClassifier
 
 class Controller:
 
-    def __init__(self, gui, queue) -> None:
+    def __init__(self, gui, queue, graph_window_queue=None) -> None:
         self.gui = gui
         self.queue = queue
+        self.graph_window_queue = graph_window_queue
 
         self.last_bot_response = None
 
@@ -16,7 +17,8 @@ class Controller:
         self.dialog_classifier = DialogueActClassifier(os.path.join(current_module_path, 'language/svm/diag_act_dataset.csv'), 
             os.path.join(current_module_path,'language/svm/svc.joblib'))
         
-
+    def set_graph_window_queue(self, graph_window_queue):
+        self.graph_window_queue = graph_window_queue
     
     def post_user_message(self, e):
         '''Copies user input in chat area
@@ -49,8 +51,12 @@ class Controller:
 
         
         res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
-        self.last_bot_response = res.json()["data"]
+        res = res.json()
+
+        self.last_bot_response = res["data"]
         self.queue.put(self.last_bot_response)
+        if self.graph_window_queue is not None:
+            self.graph_window_queue.put({"history_args": res["history_args"], "history_replies": res["history_replies"]})
 
     def on_close(self):
 

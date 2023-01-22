@@ -1,6 +1,3 @@
-from neo4j.graph import Node
-import time
-
 from chat.db.CovidVaccineGraph import CovidVaccineGraph
 
 
@@ -16,6 +13,7 @@ class ArgumentationManager:
     def __init__(self) -> None:
         self.arg_graph = CovidVaccineGraph()
         self.clear()
+
 
     def clear(self):
         # self.history_args = [] # history of argument nodes communicated by user
@@ -158,7 +156,6 @@ class ArgumentationManager:
 
             else:
                 return "Your message contradicts previous statements"
-        
         # filter past potentially consistent replies that are no longer compatible with newly added arguments
         # explain why not retrieves argument in the history attacking the given reply
         self.potentially_cons_replies = set(filter(lambda potentially_cons_reply : len(self.explain_why_not_reply(potentially_cons_reply)) == 0, self.potentially_cons_replies))
