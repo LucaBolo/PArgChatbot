@@ -4,8 +4,8 @@ from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.svm import SVC
 from joblib import dump, load
 import os
+from scipy.spatial.distance import braycurtis
 from language.language import get_embeddings
-
 
 
 class DialogueActClassifier:
@@ -32,20 +32,20 @@ class DialogueActClassifier:
     def train(self, train_texts, train_labels, folds=5, scoring='f1_micro'):
         
         if not os.path.exists(self.model_path):
-            model = SVC(random_state=42, class_weight='balanced', probability=True)
             parameters = {'C': [0.1, 0.5, 1, 1.5, 2, 10],
                         'kernel': ['poly', 'rbf', 'linear', 'sigmoid'],
                         'gamma': ['scale', 'auto']}
             
+            model = SVC(random_state=42, class_weight='balanced', probability=True)
+            # grid_classifier = GridSearchCV(model, parameters, cv=folds, scoring=scoring) # micro bc class imbalance
             grid_classifier = GridSearchCV(model, parameters, cv=folds, scoring=scoring) # micro bc class imbalance
-            
             current_module_path = os.path.dirname(os.path.realpath(__file__))
             _, train_embeddings = get_embeddings(train_texts, embedding_file=os.path.join(current_module_path, 'train_embs.json'))
 
             grid_classifier.fit(train_embeddings, train_labels)
-
+            
             best_classifier = grid_classifier.best_estimator_
-
+    
            
             self.best_hyperparams = grid_classifier.best_params_
 
@@ -64,12 +64,49 @@ class DialogueActClassifier:
         _, test_embeddings = get_embeddings(sentence)
         
         probabilities = model.predict_proba(test_embeddings.reshape(1,-1))
-        print(probabilities)
         pred = model.classes_[np.argmax(probabilities[0])]
-        print(pred)
+        
+        most_used_yes_words = [ "yes",
+                                "definitely",
+                                "absolutely",
+                                "of course",
+                                "sure",
+                                "without a doubt",
+                                "certainly",
+                                "positively",
+                                "agree",
+                                "yes, i do",
+                                "yes unfortunately",
+                                "yes and then some"]
+        most_used_no_words = [  "no",
+                                "not at all",
+                                "definitely not",
+                                "absolutely not",
+                                "of course not",
+                                "no way",
+                                "not a chance",
+                                "not by any means",
+                                "no i don't",
+                                "no, i don't",
+                                "certainly not",
+                                "not in a million years",
+                                "never had",
+                                "never did"]
+        
+
         if pred in ['y', 'y-d']:
-            return 'yes'
+            _, embs = get_embeddings(most_used_yes_words)
+            for emb in embs:
+                d = braycurtis(test_embeddings, emb)
+                if d <= 0.3 or sentence in most_used_yes_words:
+                    return 'yes'
+            return ''
         elif pred in ['n', 'n-d']:
-            return 'no'
+            _, embs = get_embeddings(most_used_no_words)
+            for emb in embs:
+                d = braycurtis(test_embeddings, emb)
+                if d <= 0.3 or sentence in most_used_no_words:
+                    return 'no'
+            return ''
 
 

@@ -46,17 +46,19 @@ class Controller:
             # so the sentence we send to server is the last response
             # and we classify the intent of the user
             intent = self.dialog_classifier.predict(msg)
+            if intent == '':
+                self.queue.put("I'm not sure I understand the answer, could you repeat?")
+            else:
+                sentences = [self.last_bot_response] if self.last_bot_response is not None else ''
 
-            sentences = [self.last_bot_response] if self.last_bot_response is not None else ''
+        if intent != '':
+            res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
+            res = res.json()
 
-        
-        res = requests.get("http://127.0.0.1:5000/chat", params={"usr_msg": sentences, "usr_intent": intent})
-        res = res.json()
-
-        self.last_bot_response = res["data"]
-        self.queue.put(self.last_bot_response)
-        if self.graph_window_queue is not None:
-            self.graph_window_queue.put({"history_args": res["history_args"], "history_replies": res["history_replies"]})
+            self.last_bot_response = res["data"]
+            self.queue.put(self.last_bot_response)
+            if self.graph_window_queue is not None:
+                self.graph_window_queue.put({"history_args": res["history_args"], "history_replies": res["history_replies"]})
 
     def on_close(self):
 
