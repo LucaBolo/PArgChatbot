@@ -95,7 +95,7 @@ class ArgumentationManager:
         is in conflict with the ones in the history'''
 
         attacked = self.arg_graph.get_arguments_attacked_by_argument(argument)
-
+        
         # if there is no common node between history and the attacks 
         # to the given argument, then it is conflict free
         return not (attacked & set(self.history_args))
@@ -155,7 +155,7 @@ class ArgumentationManager:
                 self.add_argument(arg_node)
 
             else:
-                return "Your message contradicts previous statements"
+                return "Your message contradicts previous statements, and as such it was not considered.\nPlease, answer the question differently."
         # filter past potentially consistent replies that are no longer compatible with newly added arguments
         # explain why not retrieves argument in the history attacking the given reply
         self.potentially_cons_replies = set(filter(lambda potentially_cons_reply : len(self.explain_why_not_reply(potentially_cons_reply)) == 0, self.potentially_cons_replies))
