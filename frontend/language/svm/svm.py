@@ -65,48 +65,14 @@ class DialogueActClassifier:
         
         probabilities = model.predict_proba(test_embeddings.reshape(1,-1))
         pred = model.classes_[np.argmax(probabilities[0])]
-        
-        most_used_yes_words = [ "yes",
-                                "definitely",
-                                "absolutely",
-                                "of course",
-                                "sure",
-                                "without a doubt",
-                                "certainly",
-                                "positively",
-                                "agree",
-                                "yes, i do",
-                                "yes unfortunately",
-                                "yes and then some"]
-        most_used_no_words = [  "no",
-                                "not at all",
-                                "definitely not",
-                                "absolutely not",
-                                "of course not",
-                                "no way",
-                                "not a chance",
-                                "not by any means",
-                                "no i don't",
-                                "no, i don't",
-                                "certainly not",
-                                "not in a million years",
-                                "never had",
-                                "never did"]
-        
+            
 
         if pred in ['y', 'y-d']:
-            _, embs = get_embeddings(most_used_yes_words)
-            for emb in embs:
-                d = braycurtis(test_embeddings, emb)
-                if d <= 0.3 or sentence in most_used_yes_words:
-                    return 'yes'
-            return ''
+            
+            return 'yes'
         elif pred in ['n', 'n-d']:
-            _, embs = get_embeddings(most_used_no_words)
-            for emb in embs:
-                d = braycurtis(test_embeddings, emb)
-                if d <= 0.3 or sentence in most_used_no_words:
-                    return 'no'
-            return ''
+            return 'no'
+        
+        return ''
 
 
