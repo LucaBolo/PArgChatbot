@@ -1,6 +1,4 @@
-from chat.db.CovidVaccineGraph import CovidVaccineGraph
-
-
+from chat.db.chatbotGraph import ImmigrationGraph
 
 
 class ArgumentationManager:
@@ -11,7 +9,7 @@ class ArgumentationManager:
         return cls.instance
 
     def __init__(self) -> None:
-        self.arg_graph = CovidVaccineGraph()
+        self.arg_graph = ImmigrationGraph()
         self.clear()
 
 
