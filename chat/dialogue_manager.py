@@ -9,8 +9,8 @@ arg_manager = ArgumentationManager()
 
 @dialogue_blueprint.route("/", methods=("GET",))
 def start_conversation():
-    return {"data": """Hello, I will help you decide where you can vaccinate for Covid19. You may share
-    with me any medical condition you suffer or suffered from. This information will never leave your device."""}
+    return {"data": """Hello, I will help you decide whether you can apply for some form of protection on the italian territory. You may share
+    with me any information about yourself and your story. All the information will never leave your device."""}
 
 @dialogue_blueprint.route("/sentences", methods=("GET",))
 def get_kb_sentences():
