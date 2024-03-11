@@ -32,8 +32,8 @@ class Controller:
 
     def post_closest_embeddings(self, msg: str):
         
-        if os.path.exists('./language/kb_embs.json'):
-            with open('./language/kb_embs.json') as f:
+        if os.path.exists('./language/immigration_kb_embs.json'):
+            with open('./language/immigration_kb_embs.json') as f:
                 kb = list(json.load(f).keys())
         else:
             res = requests.get("http://127.0.0.1:5000/sentences")
