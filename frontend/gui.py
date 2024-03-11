@@ -169,7 +169,7 @@ if __name__ == '__main__':
         train_dataloader, train_loss = sentence_translation_embedding.load_train_dataset(student, teacher, train_files)
         evaluators = sentence_translation_embedding.load_evaluators(student, teacher, dev_files, sts_data)
         sentence_translation_embedding.fit(student, train_dataloader, train_loss, evaluators)
-    else:
+
         
-        main_window = MainWindow(visualize=args.visualize)
+    main_window = MainWindow(visualize=args.visualize)
     
