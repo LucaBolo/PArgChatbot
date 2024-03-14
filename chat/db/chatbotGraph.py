@@ -105,7 +105,7 @@ class ImmigrationGraph:
     def __init__(self) -> None:
         current_path = os.path.dirname(os.path.realpath(__file__))
         self.graph = nx.DiGraph()
-        self.nodes, self.edges, self.args, self.replies = create_graph(current_path+ '\grafo_circolare.txt', current_path+ '\questions.json')
+        self.nodes, self.edges, self.args, self.replies = create_graph(current_path+ '\grafo_elena.txt', current_path+ '\questions.json')
         self.create_nodes()
         self.create_edges()
 
