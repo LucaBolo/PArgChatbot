@@ -105,7 +105,7 @@ class ImmigrationGraph:
     def __init__(self) -> None:
         current_path = os.path.dirname(os.path.realpath(__file__))
         self.graph = nx.DiGraph()
-        self.nodes, self.edges, self.args, self.replies = create_graph(current_path+ '\grafo_circolare.txt', current_path+ '\questions.json')
+        self.nodes, self.edges, self.args, self.replies = create_graph(current_path+ '\grafo_atk.txt', current_path+ '\questions.json')
         self.create_nodes()
         self.create_edges()
 
@@ -216,7 +216,8 @@ if __name__ == '__main__':
 
     print(g.create_nodes())
     print(g.create_edges())
-
+    g.get_arg_sentences()
+    g.get_node_containing_sentence('Are you in a precarious economic situation?')
     # print(g.get_argument_from_question("Are you a woman?", "n"))
 
     # nx.draw_networkx(G=g)
