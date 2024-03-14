@@ -22,14 +22,14 @@
   },
   {"node": "nonWoodo",
 	"class":"n",
-	"question":"Did the perform the Juju Woodo Ritual on you?",
+	"question":"Did they perform the Juju Woodo Ritual on you?",
 	"sentences": ["I never experienced a Juju Woodo Ritual",
                   "I wasn't victim of the Woodo Ritual",
 				  "A Juju Woodo Ritual was not performed on me"]
   },
   {"node": "woodo",
 	"class":"p",
-	"question":"Did the perform the Juju Woodo Ritual on you?",
+	"question":"Did they perform the Juju Woodo Ritual on you?",
 	"sentences": ["A Juju Woodo Ritual was performed on me",
                   "I was victim of the Woodo Ritual",
 				  "I was subject of a Juju Woodo Ritual"]
