@@ -8,130 +8,126 @@
 	"class":"n",
 	"question":"Are you a man?",
 	"sentences": ["I am man",
-                  "Yes",
-				  "Yes, I am",
-                  "Yes, I am a man"]
+                  "I identify as a man",
+                  "I am a male",
+				  "I am a boy"]
   },
   {"node": "donna",
 	"class":"p",
 	"question":"Are you a woman?",
-	"sentences": ["I am",
-                  "Yes",
-				  "Yes, I am",
-                  "Yes, I am a woman"]
+	"sentences": ["I am a woman",
+				  "I identify as a woman",
+                  "I am a female",
+				  "I am a girl"]
   },
   {"node": "nonWoodo",
 	"class":"n",
-	"question":"Did the perform the Jujù Woodo Ritual on you?",
-	"sentences": ["No",
-                  "No, I wasn't victim of the Woodo Ritual",
-				  "No, they didn't"]
+	"question":"Did the perform the Juju Woodo Ritual on you?",
+	"sentences": ["I never experienced a Juju Woodo Ritual",
+                  "I wasn't victim of the Woodo Ritual",
+				  "A Juju Woodo Ritual was not performed on me"]
   },
   {"node": "woodo",
 	"class":"p",
-	"question":"Did the perform the Jujù Woodo Ritual on you?",
-	"sentences": ["Yes",
-                  "Yes, I was victim of the Woodo Ritual",
-				  "Yes, they did"]
+	"question":"Did the perform the Juju Woodo Ritual on you?",
+	"sentences": ["A Juju Woodo Ritual was performed on me",
+                  "I was victim of the Woodo Ritual",
+				  "I was subject of a Juju Woodo Ritual"]
   },
   {"node": "livIstrBasso",
 	"class":"p",
 	"question":"Did you go to school?",
-	"sentences": ["Yes",
-				  "Yes, I did"]
+	"sentences": ["I never went to school",
+				  "I briefly attended to a school",
+				  "I didn't attend school"]
   },
   {"node": "nonLivIstrBasso",
 	"class":"n",
 	"question":"Did you go to school?",
-	"sentences": ["I did not",
-				  "I didn't",
-                  "No, I never went to school",
-                  "No",
-                  "No, I didn't"]
+	"sentences": ["I attend school",
+				  "I did go to school",
+                  "I completed my school studies"
+        		]
   },
   {"node": "condEconPr",
 	"class":"p",
 	"question":"Are you in a precarious economic situation?",
-	"sentences": ["Yes",
-				  "Yes, I lived in poverty in my home country",
-                  "Yes, I am an orphan",
-                  "Yes, I have to provide for my family",
-                  "Yes, I did not have a house in my home country"]
+	"sentences": ["I lived in poverty in my home country",
+                  "I am an orphan",
+                  "I have to provide for my family",
+                  "I did not have a house in my home country"]
   },
   {"node": "nonCondEconPr",
 	"class":"n",
 	"question":"Are you in a precarious economic situation?",
-	"sentences": ["No",
-				  "No, I did not live in poverty in my home country",
-                  "No, I have parents that provided for me",
-                  "No, I can sustain myself",
-                  "No, I had a house in my home country"]
+	"sentences": ["I did not live in poverty in my home country",
+                  "I have parents that provided for me",
+                  "I can sustain myself",
+                  "I had a house in my home country"]
   },
   {"node": "condViaggio",
 	"class":"p",
 	"question":"Did you have issues related to you journey from your country coming here?",
-	"sentences": ["Yes",
-				  "Yes, I felt in danger during the journey",
-                  "Yes, I have unpaid debt",
-                  "Yes, I was in Libya"]
+	"sentences": ["I felt in danger during the journey",
+  				  "I encountered obstacles during my journey",
+                  "I have unpaid debt",
+                  "I was in Libya"]
   },
   {"node": "nonCondViaggio",
 	"class":"n",
 	"question":"Did you have issues related to you journey from your country coming here?",
-	"sentences": ["No",
-				  "No, I did not"]
+	"sentences": ["I had no trouble during my journey",
+				  "I had no trouble during my travels",
+				  "My travel was not problematic"]
   },
   {"node": "minacce",
 	"class":"p",
 	"question":"Did you receive any threats?",
-	"sentences": ["Yes",
-				  "Yes, I have received personal threats",
-                  "Yes, my family was threatened",
-                  "Yes, I was threatened"]
+	"sentences": ["I have received personal threats",
+                  "My family was threatened",
+                  "I was threatened"
+				]
   },
   {"node": "nonMinacce",
 	"class":"n",
 	"question":"Did you receive any threats?",
-	"sentences": ["No",
-				  "No, I did not"]
+	"sentences": ["I nevere received any threats",
+				  "Me and my relatives were not threatened"
+				]
   },
   {"node": "provNigeria",
 	"class":"p",
 	"question":"Are you from Nigeria?",
-	"sentences": ["Yes",
-				  "Yes, I am from Nigeria",
-                  "Yes, I am from Lagos",
-                  "Yes, I am from Kaduna",
-                  "Yes, I am from Benin City"]
+	"sentences": ["I am from Nigeria",
+                  "I am from Lagos",
+                  "I am from Kaduna",
+                  "I am from Benin City"]
   },
   {"node": "nonProvNigeria",
 	"class":"n",
 	"question":"Are you from Nigeria?",
-	"sentences": ["No",
-				  "No, I am not"]
+	"sentences": ["I am from a different country",
+				  "I am from Egypt"]
   },
   {"node": "violenza",
 	"class":"p",
 	"question":"Are you a victim of violence?",
-	"sentences": ["Yes",
-				  "Yes, I have scars",
-                  "Yes, I am a victim of psychological violence"]
+	"sentences": ["I have scars",
+                  "I am a victim of psychological violence"]
   },
   {"node": "nonViolenza",
 	"class":"n",
 	"question":"Are you a victim of violence?",
-	"sentences": ["No",
-				  "No, I am not"]
+	"sentences": ["I was not abused"]
   },
   {"node": "madame",
 	"class":"p",
 	"question":"During your journey, have you met a woman who people called madame?",
-	"sentences": ["Yes",
-				  "Yes, I have"]
+	"sentences": ["I have met a woman met madame"]
   },
   {"node": "nonMadame",
 	"class":"n",
 	"question":"During your journey, have you met a woman who people called madame?",
-	"sentences": ["No",
-				  "No, I have not"]
+	"sentences": ["I have not met a person called madame",
+				  "I have not met a word called madame"]
   }]
