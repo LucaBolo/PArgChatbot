@@ -58,10 +58,10 @@ class ArgumentationManager:
 
         #print(supporting_args_sentences)
         template_args = {
-            "I": "You",
-            "am": "are",
-            "'m": " are",
-            " me ": " you "
+            " I ": " You ",
+            " am ": " are ",
+            "'m ": " are ",
+            " me ": " you ",
         }
 
         def replace_template(sentence):
